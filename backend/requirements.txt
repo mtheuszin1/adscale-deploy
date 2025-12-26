@@ -13,3 +13,4 @@ celery[redis]
 flower
 playwright
 python-dotenv
+email-validator
