@@ -107,7 +107,7 @@ services:
       - coolify
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.ads-frontend.rule=Host(`adsradar.pro`)"
+      - "traefik.http.routers.ads-frontend.rule=Host(`adsradar.pro`) || Host(`77.60.2.62`)"
       - "traefik.http.routers.ads-frontend.entrypoints=web"
       - "traefik.http.services.ads-frontend.loadbalancer.server.port=80"
 
