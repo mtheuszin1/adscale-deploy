@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  # 1. Banco de Dados (PostgreSQL)
+  db:
+    image: postgres:15-alpine
+    container_name: adscale_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-adscale_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-adscale_secure_password_2025}
+      POSTGRES_DB: ${POSTGRES_DB:-adscale_prod}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - adscale_net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-adscale_admin} -d ${POSTGRES_DB:-adscale_prod}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Cache & Filas (Redis)
+  redis:
+    image: redis:7-alpine
+    container_name: adscale_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - adscale_net
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+
+  # 3. Backend API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: adscale_backend
+    restart: always
+    command: uvicorn backend.main:app --host 0.0.0.0 --port 8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-adscale_admin}:${POSTGRES_PASSWORD:-adscale_secure_password_2025}@db:5432/${POSTGRES_DB:-adscale_prod}
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=${SECRET_KEY:-change_me_in_prod}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:5173,http://localhost}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - adscale_net
+
+  # 4. Background Workers (Celery)
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: adscale_worker
+    restart: always
+    command: celery -A backend.worker worker --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-adscale_admin}:${POSTGRES_PASSWORD:-adscale_secure_password_2025}@db:5432/${POSTGRES_DB:-adscale_prod}
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - api
+      - redis
+      - db
+    networks:
+      - adscale_net
+
+  # 5. Frontend (React + Nginx)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: adscale_frontend
+    restart: always
+    ports:
+      - "80:80"
+    networks:
+      - adscale_net
+
+volumes:
+  postgres_data:
+  redis_data:
+
+
+networks:
+  adscale_net:
+    driver: bridge

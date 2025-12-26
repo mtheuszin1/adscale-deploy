@@ -1,0 +1,8 @@
+{
+  "name": "ADSCALE - Premium Ad Intelligence",
+  "description": "A high-performance SaaS platform for curated ad intelligence, featuring scaling creative analysis, niche filtering, and expert insights for traffic managers and affiliates.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

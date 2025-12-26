@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+sqlalchemy[asyncio]
+aiosqlite
+pydantic
+python-multipart
+stripe
+asyncpg
+psycopg2-binary
+python-jose[cryptography]
+passlib[bcrypt]
+celery[redis]
+flower
+playwright
+python-dotenv

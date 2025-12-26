@@ -1,0 +1,349 @@
+
+from fastapi import FastAPI, Depends, HTTPException, status
+from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from typing import List
+import uuid
+
+import time
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+from .database import engine, Base, get_db
+from .models import AdModel, UserModel
+from .schemas import Ad, AdCreate, User, UserCreate, UserLogin, Token
+from .auth import verify_password, get_password_hash, create_access_token, create_refresh_token, decode_access_token
+from .dependencies import get_current_user, get_current_admin
+
+
+def log_to_file(msg):
+    with open("backend_debug.log", "a") as f:
+        f.write(f"{time.ctime()}: {msg}\n")
+
+app = FastAPI()
+
+
+# Allow CORS for local development
+
+# Strict CORS for production
+origins_str = os.getenv("ALLOWED_ORIGINS", "")
+origins = [origin.strip() for origin in origins_str.split(",") if origin.strip()]
+
+if not origins:
+    # Safe default for local dev if not specified, but warn
+    origins = ["http://localhost:5173"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# --- SCANNER ---
+from .tasks import scan_ad_task, import_ads_task
+
+class ScanRequest(BaseModel):
+    url: str
+
+@app.post("/scan-ad")
+async def scan_ad(request: ScanRequest, current_user = Depends(get_current_user)):
+    # Trigger Async Task
+    task = scan_ad_task.delay(request.url)
+    return {
+        "task_id": task.id,
+        "status": "processing", 
+        "message": "Scan started in background"
+    }
+
+# --- LIFECYCLE ---
+@app.on_event("startup")
+async def startup():
+    log_to_file("Backend starting up...")
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        log_to_file("Database initialized.")
+    except Exception as e:
+        log_to_file(f"STARTUP ERROR: {str(e)}")
+
+# --- AUTH ROUTES ---
+
+@app.post("/register", response_model=Token)
+async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
+    log_to_file(f"Registering user: {user_data.email}")
+    try:
+        result = await db.execute(select(UserModel).where(UserModel.email == user_data.email))
+        existing = result.scalars().first()
+        if existing:
+            log_to_file(f"Registration failed: User {user_data.email} already exists")
+            raise HTTPException(status_code=400, detail="Este e-mail já está cadastrado.")
+        log_to_file("User does not exist, proceeding with creation...")
+    except Exception as e:
+        log_to_file(f"Error checking existing user: {str(e)}")
+        raise e
+    
+    # Create user
+    new_id = str(uuid.uuid4())
+    hashed = get_password_hash(user_data.password)
+    # Default admin if email contains admin (for simplicity in this demo)
+    role = "admin" if "admin" in user_data.email.lower() else "user"
+    
+    db_user = UserModel(
+        id=new_id,
+        email=user_data.email,
+        name=user_data.name,
+        hashed_password=hashed,
+        role=role,
+        favorites=[]
+    )
+    db.add(db_user)
+    try:
+        await db.commit()
+        await db.refresh(db_user)
+        log_to_file(f"User {db_user.email} created successfully.")
+    except Exception as e:
+        await db.rollback()
+        log_to_file(f"DATABASE COMMIT ERROR for {user_data.email}: {str(e)}")
+        # Check if it was a race condition
+        result = await db.execute(select(UserModel).where(UserModel.email == user_data.email))
+        existing = result.scalars().first()
+        if existing:
+             log_to_file(f"Race condition: User {user_data.email} exists now.")
+             raise HTTPException(status_code=400, detail="Este e-mail já está cadastrado.")
+        raise HTTPException(status_code=500, detail="Erro interno ao criar conta.")
+    
+    # Create tokens
+    access_token = create_access_token(data={"sub": db_user.email})
+    refresh_token = create_refresh_token(data={"sub": db_user.email})
+    return {
+        "access_token": access_token, 
+        "refresh_token": refresh_token,
+        "token_type": "bearer", 
+        "user": db_user.to_dict()
+    }
+
+@app.post("/login", response_model=Token)
+async def login(user_data: UserLogin, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(UserModel).where(UserModel.email == user_data.email))
+    user = result.scalars().first()
+    if not user or not verify_password(user_data.password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Incorrect email or password")
+    
+    access_token = create_access_token(data={"sub": user.email})
+    refresh_token = create_refresh_token(data={"sub": user.email})
+    return {
+        "access_token": access_token, 
+        "refresh_token": refresh_token,
+        "token_type": "bearer", 
+        "user": user.to_dict()
+    }
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+@app.post("/auth/refresh", response_model=Token)
+async def refresh_token(req: RefreshRequest, db: AsyncSession = Depends(get_db)):
+    payload = decode_access_token(req.refresh_token)
+    if not payload or payload.get("type") != "refresh":
+        raise HTTPException(status_code=401, detail="Invalid refresh token")
+    
+    email = payload.get("sub")
+    if not email:
+        raise HTTPException(status_code=401, detail="Invalid token subject")
+        
+    # Check if user still exists/active
+    result = await db.execute(select(UserModel).where(UserModel.email == email))
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+
+    new_access_token = create_access_token(data={"sub": user.email})
+    # Optional: Rotate refresh token? For now keeping it simple (reuse unless expired)
+    # But for better security let's issue a new one too
+    new_refresh_token = create_refresh_token(data={"sub": user.email})
+    
+    return {
+        "access_token": new_access_token,
+        "refresh_token": new_refresh_token,
+        "token_type": "bearer",
+        "user": user.to_dict()
+    }
+
+@app.get("/me", response_model=User)
+async def read_users_me(current_user = Depends(get_current_user)):
+    return current_user.to_dict()
+
+@app.get("/users", response_model=List[User])
+async def get_users(db: AsyncSession = Depends(get_db), current_user = Depends(get_current_admin)):
+    result = await db.execute(select(UserModel))
+    users = result.scalars().all()
+    return [u.to_dict() for u in users]
+
+
+from fastapi import Request
+from .billing import BillingService
+
+# ... existing imports ...
+
+# --- BILLING ROUTES ---
+
+
+
+# --- BILLING ROUTES ---
+
+class CheckoutRequest(BaseModel):
+    pass # No input required, config is server-side
+
+@app.post("/pay/pix")
+async def create_pix_payment(req: CheckoutRequest, db: AsyncSession = Depends(get_db), current_user = Depends(get_current_user)):
+    return await BillingService.create_pix_payment_intent(db, current_user.id)
+
+@app.get("/pay/status/{tx_id}")
+async def check_status(tx_id: str, db: AsyncSession = Depends(get_db), current_user = Depends(get_current_user)):
+    return await BillingService.check_payment_status(db, current_user.id, tx_id)
+
+@app.post("/webhook")
+async def webhook_received(request: Request):
+    payload = await request.body()
+    sig_header = request.headers.get("stripe-signature")
+    
+    return await BillingService.process_webhook(payload, sig_header)
+
+# --- ADMIN HUB ROUTES ---
+from typing import Dict, Any
+
+@app.get("/admin/checkout")
+async def get_admin_checkout_settings(db: AsyncSession = Depends(get_db), current_user = Depends(get_current_admin)):
+    settings = await BillingService.get_checkout_settings(db)
+    return settings.to_dict()
+
+@app.put("/admin/checkout")
+async def update_admin_checkout_settings(data: Dict[str, Any], db: AsyncSession = Depends(get_db), current_user = Depends(get_current_admin)):
+    settings = await BillingService.update_checkout_settings(db, data, user_id=current_user.email)
+    return settings.to_dict()
+
+@app.get("/admin/transactions")
+async def get_admin_transactions(db: AsyncSession = Depends(get_db), current_user = Depends(get_current_admin)):
+    txs = await BillingService.get_all_transactions(db)
+    return [tx.to_dict() for tx in txs]
+
+@app.get("/public/checkout-config")
+async def get_public_checkout_config(db: AsyncSession = Depends(get_db)):
+    settings = await BillingService.get_checkout_settings(db)
+    # Return minimal public info
+    return {
+        "active": settings.active,
+        "amount": settings.amount / 100.0, # Convert to float
+        "currency": settings.currency,
+        "billingType": settings.billing_type
+    }
+
+@app.get("/checkout/public-config")
+async def get_public_checkout_config_compliant(db: AsyncSession = Depends(get_db)):
+    return await get_public_checkout_config(db)
+
+
+# --- AD ROUTES (Public) ---
+
+from .permissions import verify_subscription_access
+
+
+@app.get("/ads", response_model=List[Ad])
+async def get_ads(db: AsyncSession = Depends(get_db), current_user = Depends(get_current_user)):
+    result = await db.execute(select(AdModel).order_by(AdModel.addedAt.desc()))
+    ads = result.scalars().all()
+    return [ad.to_dict() for ad in ads]
+
+# --- AD ROUTES (Protected/Admin) ---
+
+@app.post("/ads", response_model=Ad)
+async def create_ad(ad: AdCreate, db: AsyncSession = Depends(get_db), current_user = Depends(get_current_admin)):
+    ad_data = ad.dict()
+    # Check if exists
+    result = await db.execute(select(AdModel).where(AdModel.id == ad.id))
+    existing = result.scalars().first()
+    if existing:
+        # Update
+        for key, value in ad_data.items():
+            setattr(existing, key, value)
+        await db.commit()
+        await db.refresh(existing)
+        return existing.to_dict()
+    
+    db_ad = AdModel(**ad_data)
+    db.add(db_ad)
+    await db.commit()
+    await db.refresh(db_ad)
+    return db_ad.to_dict()
+
+@app.post("/ads/import")
+async def import_ads(ads: List[AdCreate], db: AsyncSession = Depends(get_db), current_user = Depends(get_current_admin)):
+    import time
+    
+    # Offload to Celery
+    ads_data = [ad.dict() for ad in ads]
+    
+    # We use .delay() to send to Redis queue
+    task = import_ads_task.delay(ads_data)
+
+    return {
+        "success": True, 
+        "message": "Import started in background",
+        "task_id": task.id,
+        "count": len(ads)
+    }
+
+@app.put("/ads/{ad_id}", response_model=Ad)
+async def update_ad(ad_id: str, ad: AdCreate, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(AdModel).where(AdModel.id == ad_id))
+    db_ad = result.scalars().first()
+    if not db_ad:
+        raise HTTPException(status_code=404, detail="Ad not found")
+    
+    ad_data = ad.dict()
+    for key, value in ad_data.items():
+        setattr(db_ad, key, value)
+        
+    await db.commit()
+    await db.refresh(db_ad)
+    return db_ad.to_dict()
+
+@app.delete("/ads/{ad_id}")
+async def delete_ad(ad_id: str, db: AsyncSession = Depends(get_db), current_user = Depends(get_current_admin)):
+    result = await db.execute(select(AdModel).where(AdModel.id == ad_id))
+    ad = result.scalars().first()
+    if ad:
+        await db.delete(ad)
+        await db.commit()
+        return {"ok": True}
+    raise HTTPException(status_code=404, detail="Ad not found")
+
+@app.middleware("http")
+async def log_requests(request, call_next):
+    start_time = time.time()
+    log_to_file(f"Request started: {request.method} {request.url.path}")
+    response = await call_next(request)
+    duration = time.time() - start_time
+    log_to_file(f"Request finished: {request.method} {request.url.path} - {response.status_code} ({duration:.2f}s)")
+    return response
+
+@app.get("/")
+async def root():
+    return {"status": "ok", "service": "adscale-api"}
+
+@app.get("/test-db")
+async def test_db(db: AsyncSession = Depends(get_db)):
+    from sqlalchemy import text
+    try:
+        start = time.time()
+        await db.execute(text("SELECT 1"))
+        return {"status": "ok", "time": time.time() - start}
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
