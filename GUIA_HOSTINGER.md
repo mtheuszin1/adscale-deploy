@@ -86,7 +86,7 @@ Você precisa criar o arquivo de configurações secretas na VPS.
    ```
    Cole:
    ```ini
-   VITE_API_URL=http://SEU_IP_DA_VPS:8001
+   VITE_API_URL=https://api.adsradar.pro
    ```
    Salve (`Ctrl+O`, `Enter`, `Ctrl+X`).
 

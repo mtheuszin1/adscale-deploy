@@ -57,7 +57,7 @@ services:
       - SECRET_KEY=${SECRET_KEY:-change_me_in_prod}
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
-      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:5173,http://localhost}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-https://adsradar.pro,http://localhost}
     depends_on:
       db:
         condition: service_healthy
@@ -65,6 +65,13 @@ services:
         condition: service_healthy
     networks:
       - adscale_net
+      - coolify
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ads-backend.rule=Host(`api.adsradar.pro`)"
+      - "traefik.http.routers.ads-backend.entrypoints=websecure"
+      - "traefik.http.routers.ads-backend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.ads-backend.loadbalancer.server.port=8001"
 
   # 4. Background Workers (Celery)
   worker:
@@ -83,6 +90,7 @@ services:
       - db
     networks:
       - adscale_net
+      - coolify
 
   # 5. Frontend (React + Nginx)
   frontend:
@@ -91,10 +99,17 @@ services:
       dockerfile: Dockerfile.frontend
     container_name: adscale_frontend
     restart: always
-    ports:
-      - "3000:80"
+    expose:
+      - "80"
     networks:
       - adscale_net
+      - coolify
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ads-frontend.rule=Host(`adsradar.pro`)"
+      - "traefik.http.routers.ads-frontend.entrypoints=websecure"
+      - "traefik.http.routers.ads-frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.ads-frontend.loadbalancer.server.port=80"
 
 volumes:
   postgres_data:
@@ -104,3 +119,5 @@ volumes:
 networks:
   adscale_net:
     driver: bridge
+  coolify:
+    external: true
