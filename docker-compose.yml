@@ -69,8 +69,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.ads-backend.rule=Host(`api.adsradar.pro`)"
-      - "traefik.http.routers.ads-backend.entrypoints=websecure"
-      - "traefik.http.routers.ads-backend.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.ads-backend.entrypoints=web"
       - "traefik.http.services.ads-backend.loadbalancer.server.port=8001"
 
   # 4. Background Workers (Celery)
@@ -109,8 +108,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.ads-frontend.rule=Host(`adsradar.pro`)"
-      - "traefik.http.routers.ads-frontend.entrypoints=websecure"
-      - "traefik.http.routers.ads-frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.ads-frontend.entrypoints=web"
       - "traefik.http.services.ads-frontend.loadbalancer.server.port=80"
 
 volumes:
