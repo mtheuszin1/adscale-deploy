@@ -84,7 +84,7 @@ export function AdminCheckoutHub() {
         const rate = (paidTxs.length / total) * 100;
 
         setStats({
-            revenue: rev = paidTxs.reduce((acc, t) => acc + t.amount, 0), // Fix logic here
+            revenue: paidTxs.reduce((acc, t) => acc + t.amount, 0),
             successRate: rate,
             total
         });
@@ -356,10 +356,10 @@ export function AdminCheckoutHub() {
                                     </td>
                                     <td className="py-4">
                                         <span className={`text-[10px] font-black uppercase px-3 py-1.5 rounded-full border ${tx.status === 'paid'
-                                                ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
-                                                : tx.status === 'pending'
-                                                    ? 'bg-amber-500/10 border-amber-500/20 text-amber-400'
-                                                    : 'bg-red-500/10 border-red-500/20 text-red-500'
+                                            ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+                                            : tx.status === 'pending'
+                                                ? 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+                                                : 'bg-red-500/10 border-red-500/20 text-red-500'
                                             }`}>
                                             {tx.status}
                                         </span>
