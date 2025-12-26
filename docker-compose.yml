@@ -99,6 +99,8 @@ services:
       dockerfile: Dockerfile.frontend
     container_name: adscale_frontend
     restart: always
+    ports:
+      - "9000:80"
     expose:
       - "80"
     networks:
