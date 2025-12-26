@@ -92,7 +92,7 @@ services:
     container_name: adscale_frontend
     restart: always
     ports:
-      - "80:80"
+      - "8080:80"
     networks:
       - adscale_net
 
