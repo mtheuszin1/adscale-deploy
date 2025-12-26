@@ -86,7 +86,7 @@ Você precisa criar o arquivo de configurações secretas na VPS.
    ```
    Cole:
    ```ini
-   VITE_API_URL=http://SEU_IP_DA_VPS:8000
+   VITE_API_URL=http://SEU_IP_DA_VPS:8001
    ```
    Salve (`Ctrl+O`, `Enter`, `Ctrl+X`).
 
@@ -119,8 +119,8 @@ Agora vamos ligar tudo (Site, Banco, Backend, Fila).
 ## Passo 5: Testar
 
 Abra seu navegador e digite:
-- **Site:** `http://SEU_IP_DA_VPS`
-- **Backend:** `http://SEU_IP_DA_VPS:8000/docs`
+- **Site:** `http://SEU_IP_DA_VPS:3000`
+- **Backend:** `http://SEU_IP_DA_VPS:8001/docs`
 
 Se a tela de login aparecer, **PARABÉNS!** Você tem um SaaS rodando em produção com Banco de Dados real, Sistema de Filas e tudo mais.
 
