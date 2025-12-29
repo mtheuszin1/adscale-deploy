@@ -34,9 +34,14 @@ app = FastAPI()
 origins_str = os.getenv("ALLOWED_ORIGINS", "")
 origins = [origin.strip() for origin in origins_str.split(",") if origin.strip()]
 
-if not origins:
-    # Safe default for local dev if not specified, but warn
-    origins = ["http://localhost:5173"]
+# Auto-allow the known production domain
+if "https://adsradar.pro" not in origins:
+    origins.append("https://adsradar.pro")
+if "http://localhost:5173" not in origins:
+    origins.append("http://localhost:5173")
+
+print(f"DEBUG: Initializing CORS with allowed origins: {origins}")
+log_to_file(f"CORS ORIGINS: {origins}")
 
 app.add_middleware(
     CORSMiddleware,
@@ -44,6 +49,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"]
 )
 
 # --- SCANNER ---
