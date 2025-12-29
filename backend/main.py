@@ -34,11 +34,18 @@ app = FastAPI()
 origins_str = os.getenv("ALLOWED_ORIGINS", "")
 origins = [origin.strip() for origin in origins_str.split(",") if origin.strip()]
 
-# Auto-allow the known production domain
-if "https://adsradar.pro" not in origins:
-    origins.append("https://adsradar.pro")
-if "http://localhost:5173" not in origins:
-    origins.append("http://localhost:5173")
+# Auto-allow the known production domain and its variants
+variants = [
+    "https://adsradar.pro", 
+    "http://adsradar.pro", 
+    "https://www.adsradar.pro", 
+    "http://www.adsradar.pro",
+    "https://api.adsradar.pro",
+    "http://localhost:5173"
+]
+for v in variants:
+    if v not in origins:
+        origins.append(v)
 
 print(f"DEBUG: Initializing CORS with allowed origins: {origins}")
 log_to_file(f"CORS ORIGINS: {origins}")
@@ -352,10 +359,14 @@ async def delete_ad(ad_id: str, db: AsyncSession = Depends(get_db), current_user
 @app.middleware("http")
 async def log_requests(request, call_next):
     start_time = time.time()
-    log_to_file(f"Request started: {request.method} {request.url.path}")
+    origin = request.headers.get("origin")
+    method = request.method
+    path = request.url.path
+    log_to_file(f"Request started: {method} {path} (Origin: {origin})")
+    
     response = await call_next(request)
     duration = time.time() - start_time
-    log_to_file(f"Request finished: {request.method} {request.url.path} - {response.status_code} ({duration:.2f}s)")
+    log_to_file(f"Request finished: {method} {path} - {response.status_code} ({duration:.2f}s)")
     return response
 
 @app.get("/")
