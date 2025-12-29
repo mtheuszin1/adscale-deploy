@@ -24,23 +24,23 @@ const ScannerModal: React.FC<ScannerModalProps> = ({ onClose, onScanComplete }) 
             const taskId = startData.task_id;
 
             // Start Polling
-            const poll = setInterval(async () => {
+            const pollId = setInterval(async () => {
                 try {
                     const taskStatus = await api.getTaskStatus(taskId);
                     if (taskStatus.status === 'SUCCESS') {
-                        clearInterval(poll);
+                        clearInterval(pollId);
                         setResult(taskStatus.result.data);
                         setLoading(false);
                         if (onScanComplete) onScanComplete(taskStatus.result.data);
                     } else if (taskStatus.status === 'FAILURE') {
-                        clearInterval(poll);
-                        setError('Erro no processamento da análise.');
+                        clearInterval(pollId);
+                        setError('Erro no processamento da análise. Verifique a URL.');
                         setLoading(false);
                     }
                 } catch (e) {
                     console.error("Polling error", e);
                 }
-            }, 2000);
+            }, 2500);
 
         } catch (e: any) {
             setError(e.message || 'Erro ao iniciar scan.');
