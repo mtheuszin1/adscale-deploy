@@ -68,11 +68,11 @@ services:
       - coolify
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.ads-backend.rule=Host(`api.adsradar.pro`)"
-      - "traefik.http.routers.ads-backend.entrypoints=web,websecure"
-      - "traefik.http.routers.ads-backend.tls=true"
-      - "traefik.http.routers.ads-backend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.ads-backend.loadbalancer.server.port=8001"
+      - "traefik.docker.network=coolify"
+      - "traefik.http.routers.adscale-api.rule=Host(`api.adsradar.pro`)"
+      - "traefik.http.routers.adscale-api.entrypoints=web,websecure"
+      - "traefik.http.routers.adscale-api.tls=true"
+      - "traefik.http.services.adscale-api.loadbalancer.server.port=8001"
 
   # 4. Background Workers (Celery)
   worker:
@@ -109,11 +109,11 @@ services:
       - coolify
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.ads-frontend.rule=Host(`adsradar.pro`) || Host(`77.60.2.62`)"
-      - "traefik.http.routers.ads-frontend.entrypoints=web,websecure"
-      - "traefik.http.routers.ads-frontend.tls=true"
-      - "traefik.http.routers.ads-frontend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.ads-frontend.loadbalancer.server.port=80"
+      - "traefik.docker.network=coolify"
+      - "traefik.http.routers.adscale-frontend.rule=Host(`adsradar.pro`) || Host(`77.60.2.62`)"
+      - "traefik.http.routers.adscale-frontend.entrypoints=web,websecure"
+      - "traefik.http.routers.adscale-frontend.tls=true"
+      - "traefik.http.services.adscale-frontend.loadbalancer.server.port=80"
 
 volumes:
   postgres_data:
