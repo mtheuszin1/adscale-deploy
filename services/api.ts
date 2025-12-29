@@ -113,6 +113,14 @@ export const api = {
         return response.json();
     },
 
+    getTaskStatus: async (taskId: string): Promise<any> => {
+        const response = await fetch(`${API_URL}/tasks/${taskId}`, {
+            headers: getHeaders(),
+        });
+        if (!response.ok) throw new Error('Failed to get task status');
+        return response.json();
+    },
+
     // --- AUTH ---
     login: async (email: string, password: string): Promise<{ access_token: string; refresh_token: string; user: User }> => {
         const response = await fetch(`${API_URL}/login`, {

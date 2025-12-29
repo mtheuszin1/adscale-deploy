@@ -62,6 +62,24 @@ async def scan_ad(request: ScanRequest, current_user = Depends(get_current_user)
         "message": "Scan started in background"
     }
 
+@app.get("/tasks/{task_id}")
+async def get_task_status(task_id: str):
+    from celery.result import AsyncResult
+    task_result = AsyncResult(task_id)
+    
+    result = {
+        "task_id": task_id,
+        "status": task_result.status,
+    }
+    
+    if task_result.ready():
+        result["result"] = task_result.result
+        if task_result.status == "SUCCESS":
+             # Extract structured data if it's the scanner
+             pass
+    
+    return result
+
 # --- LIFECYCLE ---
 @app.on_event("startup")
 async def startup():
@@ -92,8 +110,8 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
     # Create user
     new_id = str(uuid.uuid4())
     hashed = get_password_hash(user_data.password)
-    # Default admin if email contains admin (for simplicity in this demo)
-    role = "admin" if "admin" in user_data.email.lower() else "user"
+    # SECURITY FIX: Remove automatic admin based on email
+    role = "user"
     
     db_user = UserModel(
         id=new_id,

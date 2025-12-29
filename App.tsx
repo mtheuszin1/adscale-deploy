@@ -112,16 +112,8 @@ const App: React.FC = () => {
   };
 
   const handleSubscribe = () => {
-    if (!user) return;
-    const updatedUser: User = {
-      ...user,
-      subscriptionActive: true,
-      subscriptionPlan: 'monthly',
-      nextBillingDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString()
-    };
-    setUser(updatedUser);
-    localStorage.setItem('adscale_user', JSON.stringify(updatedUser)); // Update local for now, ideally update backend too
-    setCurrentPage('dashboard');
+    // Navigate to pricing page instead of local mock
+    setCurrentPage('pricing');
   };
 
   // If loading user (optional state), we could show a loader. 

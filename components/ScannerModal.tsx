@@ -20,12 +20,30 @@ const ScannerModal: React.FC<ScannerModalProps> = ({ onClose, onScanComplete }) 
         setError('');
         setResult(null);
         try {
-            const data = await api.scanAd(url);
-            setResult(data);
-            if (onScanComplete) onScanComplete(data);
+            const startData = await api.scanAd(url);
+            const taskId = startData.task_id;
+
+            // Start Polling
+            const poll = setInterval(async () => {
+                try {
+                    const taskStatus = await api.getTaskStatus(taskId);
+                    if (taskStatus.status === 'SUCCESS') {
+                        clearInterval(poll);
+                        setResult(taskStatus.result.data);
+                        setLoading(false);
+                        if (onScanComplete) onScanComplete(taskStatus.result.data);
+                    } else if (taskStatus.status === 'FAILURE') {
+                        clearInterval(poll);
+                        setError('Erro no processamento da análise.');
+                        setLoading(false);
+                    }
+                } catch (e) {
+                    console.error("Polling error", e);
+                }
+            }, 2000);
+
         } catch (e: any) {
-            setError(e.message || 'Erro ao escanear URL.');
-        } finally {
+            setError(e.message || 'Erro ao iniciar scan.');
             setLoading(false);
         }
     };
