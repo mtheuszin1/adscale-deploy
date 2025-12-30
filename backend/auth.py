@@ -20,19 +20,14 @@ ALGORITHM = "HS256"
 # Default to 60 minutes if not set
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 
 def verify_password(plain_password, hashed_password):
-    if len(plain_password.encode('utf-8')) > 72:
-        plain_password = plain_password[:70]
     return pwd_context.verify(plain_password, hashed_password)
 
 
 def get_password_hash(password):
-    # Bcrypt has a limit of 72 bytes. We prevent crash by truncating.
-    if len(password.encode('utf-8')) > 72:
-        password = password[:70] # Safe truncate
     return pwd_context.hash(password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
