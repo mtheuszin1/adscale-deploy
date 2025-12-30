@@ -38,14 +38,14 @@ export const INITIAL_ADS: Ad[] = [
     salesPageUrl: "https://manifeist.com/tote-wallet-lp",
     checkoutUrl: "https://manifeist.com/checkout/tote",
     libraryUrl: "https://www.facebook.com/ads/library/?id=1242990906723311",
-    performance: { 
-      estimatedCtr: 6.2, 
-      estimatedCpc: 0.08, 
-      daysActive: 16, 
-      successProbability: 99, 
-      estimatedSpend: "R$ 1M+", 
-      cloakerDetected: false, 
-      momentum: [200, 450, 600, 780, 846] 
+    performance: {
+      estimatedCtr: 6.2,
+      estimatedCpc: 0.08,
+      daysActive: 16,
+      successProbability: 99,
+      estimatedSpend: "R$ 1M+",
+      cloakerDetected: false,
+      momentum: [200, 450, 600, 780, 846]
     },
     siteTraffic: { monthlyVisits: "1.2M", topSource: "Meta Ads", deviceSplit: { mobile: 95, desktop: 5 } },
     techStack: { ecommercePlatform: "Shopify", trackingPixels: ["FB", "TT"], serverCountry: "USA" },
@@ -55,7 +55,9 @@ export const INITIAL_ADS: Ad[] = [
       firstSeen: "16 days ago",
       highestActiveAds: 853,
       highestActiveDate: "2 days ago"
-    }
+    },
+    pixels: ["FB", "TT"],
+    tld: ".com"
   },
   {
     id: "ped-778899",
@@ -81,14 +83,14 @@ export const INITIAL_ADS: Ad[] = [
     salesPageUrl: "https://amarelinhapedagogica.com.br/oferta-exclusiva",
     checkoutUrl: "https://pay.kiwify.com.br/amarelinha-vsl",
     libraryUrl: "https://www.facebook.com/ads/library/?view_all_page_id=1029384756",
-    performance: { 
-      estimatedCtr: 4.7, 
-      estimatedCpc: 0.15, 
-      daysActive: 42, 
-      successProbability: 95, 
-      estimatedSpend: "R$ 50k+", 
-      cloakerDetected: false, 
-      momentum: [12, 28, 40, 55, 68] 
+    performance: {
+      estimatedCtr: 4.7,
+      estimatedCpc: 0.15,
+      daysActive: 42,
+      successProbability: 95,
+      estimatedSpend: "R$ 50k+",
+      cloakerDetected: false,
+      momentum: [12, 28, 40, 55, 68]
     },
     siteTraffic: { monthlyVisits: "85k", topSource: "Meta Ads", deviceSplit: { mobile: 98, desktop: 2 } },
     techStack: { ecommercePlatform: "Kiwify", trackingPixels: ["FB"], serverCountry: "Brasil" },
@@ -98,7 +100,9 @@ export const INITIAL_ADS: Ad[] = [
       firstSeen: "6 days ago",
       highestActiveAds: 72,
       highestActiveDate: "4 days ago"
-    }
+    },
+    pixels: ["FB"],
+    tld: ".com.br"
   },
   {
     id: "cas-102030",
@@ -124,14 +128,14 @@ export const INITIAL_ADS: Ad[] = [
     salesPageUrl: "https://cassianomagnus.com.br/mentoria-elite",
     checkoutUrl: "https://pay.hotmart.com/C77889900X",
     libraryUrl: "https://www.facebook.com/ads/library/?view_all_page_id=990887162",
-    performance: { 
-      estimatedCtr: 6.8, 
-      estimatedCpc: 0.95, 
-      daysActive: 90, 
-      successProbability: 98, 
-      estimatedSpend: "R$ 500k+", 
-      cloakerDetected: false, 
-      momentum: [100, 110, 130, 145, 150] 
+    performance: {
+      estimatedCtr: 6.8,
+      estimatedCpc: 0.95,
+      daysActive: 90,
+      successProbability: 98,
+      estimatedSpend: "R$ 500k+",
+      cloakerDetected: false,
+      momentum: [100, 110, 130, 145, 150]
     },
     siteTraffic: { monthlyVisits: "250k", topSource: "Instagram", deviceSplit: { mobile: 90, desktop: 10 } },
     techStack: { ecommercePlatform: "Custom", trackingPixels: ["FB", "GA4"], serverCountry: "Brasil" },
@@ -141,6 +145,8 @@ export const INITIAL_ADS: Ad[] = [
       firstSeen: "15 days ago",
       highestActiveAds: 165,
       highestActiveDate: "2 days ago"
-    }
+    },
+    pixels: ["FB", "GA4"],
+    tld: ".com.br"
   }
 ];
