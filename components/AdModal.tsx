@@ -26,7 +26,7 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onClose, onNextAd, onPrevAd, isSu
   const isVideo = ad.type === 'VSL' || (ad.mediaUrl || '').toLowerCase().match(/\.(mp4|webm|ogg|mov)$/) || (ad.mediaUrl || '').toLowerCase().includes('video') || (ad.mediaUrl || '').includes('blob:');
   const [mediaError, setMediaError] = useState(false);
   const creativeMedia = ad.mediaUrl || ad.thumbnail || `https://ui-avatars.com/api/?name=AD&background=1e293b&color=3b82f6&size=1024&bold=true`;
-  const brandLogo = ad.brandLogo || `https://ui-avatars.com/api/?name=${encodeURIComponent(ad.title)}&background=3b82f6&color=fff&size=256&bold=true`;
+  const brandLogo = ad.brandLogo || `https://ui-avatars.com/api/?name=${encodeURIComponent(ad.title || 'AD')}&background=3b82f6&color=fff&size=256&bold=true`;
 
   useEffect(() => {
     if (isSubscribed && activeTab === 'history') {

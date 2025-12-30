@@ -122,7 +122,7 @@ const AdCard: React.FC<AdCardProps> = memo(({ ad, onClick, isFavorite, onToggleF
   }
 
   // Fallbacks otimizados com cores mais visíveis
-  const brandLogo = ad.brandLogo || `https://ui-avatars.com/api/?name=${encodeURIComponent(ad.title)}&background=3b82f6&color=fff&size=256&bold=true`;
+  const brandLogo = ad.brandLogo || `https://ui-avatars.com/api/?name=${encodeURIComponent(ad.title || 'AD')}&background=3b82f6&color=fff&size=256&bold=true`;
   const primaryLocation = ad.targeting?.locations?.[0] || { country: 'Brasil', flag: '🇧🇷' };
 
   const handleToggleExpand = (e: React.MouseEvent) => {
