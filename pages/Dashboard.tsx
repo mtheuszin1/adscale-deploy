@@ -96,7 +96,7 @@ const Dashboard: React.FC<DashboardProps> = ({ ads, onAdClick, onNavigate, isSub
           </div>
 
           <h1 className="text-6xl md:text-[100px] font-black italic uppercase tracking-tighter text-slate-900 leading-[0.85] mb-8">
-            ADSRADAR <br /> <span className="text-blue-600">RADAR.</span>
+            AdsRadar <br /> <span className="text-blue-600">RADAR.</span>
           </h1>
 
           <p className="text-slate-400 text-lg md:text-xl font-medium max-w-lg mb-12 italic leading-relaxed">
