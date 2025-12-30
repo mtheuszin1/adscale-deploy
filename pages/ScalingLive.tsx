@@ -20,30 +20,30 @@ const ScalingLive: React.FC<ScalingLiveProps> = ({ ads, onAdClick, favorites, on
 
   const filteredAds = useMemo(() => {
     return ads.filter(ad => {
-      // Dados reais extraídos do CSV via dbService
       const days = ad.performance?.daysActive || 0;
-      const isScaling = ad.status === AdStatus.SCALING || ad.adCount >= 3;
+      // Stricter Scale Threshold for "Live" page: min 7 active ads
+      const isHighScale = ad.adCount >= 7;
 
-      // Definição de Nichos "Hot" (Apostas, Saúde, Finanças)
       const hotNiches = [Niche.BETTING, Niche.HEALTH, Niche.FINANCE];
 
       let matchesFilter = false;
 
       if (timeframe === 'today') {
-        // "Escalando Hoje": Foco em criativos novos (<= 1 dia) com sinais de escala rápida
-        matchesFilter = days <= 1 && isScaling;
+        // "RECENT SCALING": New ads (<= 2 days) that are ALREADY scaling fast
+        matchesFilter = days <= 2 && isHighScale;
       } else if (timeframe === 'week') {
-        // "Tração na Semana": Foco em Nichos "HOTS" com tempo de veiculação intermediário (<= 7 dias)
-        // Conforme solicitado: "em atração mostre nichos hots"
-        matchesFilter = days <= 7 && hotNiches.includes(ad.niche);
+        // "ESTABLISHED SCALE": 3 to 10 days of sustained high volume
+        matchesFilter = days > 2 && days <= 10 && isHighScale;
       } else if (timeframe === 'month') {
-        // "Monitor Mensal": Foco em nichos de escala sustentável (Info, Business, Drop) ou outros
-        // que não sejam os "Hots" imediatistas, com tempo de vida de até 30 dias.
-        matchesFilter = days <= 30 && !hotNiches.includes(ad.niche) && isScaling;
+        // "MARKET LEADERS": Long running high-scale operations
+        matchesFilter = days > 10 && days <= 45 && isHighScale;
       }
 
       return matchesFilter && ad.isVisible !== false;
-    }).sort((a, b) => b.adCount - a.adCount);
+    }).sort((a, b) => {
+      // Priority: Highest adCount first for Live page
+      return b.adCount - a.adCount;
+    });
   }, [ads, timeframe]);
 
   return (
