@@ -68,7 +68,7 @@ const AdCard: React.FC<AdCardProps> = memo(({ ad, onClick, isFavorite, onToggleF
       onClick={() => onClick(ad)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="bg-white dark:bg-[#0a0f1e] rounded-[40px] overflow-hidden transition-all duration-500 group cursor-pointer flex flex-col h-full shadow-lg hover:shadow-2xl dark:shadow-2xl relative border border-slate-200 dark:border-white/5 hover:scale-[1.01]"
+      className="bg-white dark:bg-[#0a0f1e] rounded-[40px] overflow-hidden transition-all duration-500 group cursor-pointer flex flex-col h-full shadow-lg hover:shadow-2xl dark:shadow-2xl relative border border-slate-200 dark:border-white/5 hover:scale-[1.01] animate-in fade-in slide-in-from-bottom-4 duration-700"
     >
       {/* HEADER BRANCO - DESTAQUE TOTAL */}
       <div className="bg-white p-6 pt-8 pb-6 relative z-10">

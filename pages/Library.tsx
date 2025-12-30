@@ -28,8 +28,11 @@ const Library: React.FC<LibraryProps> = ({ ads, onAdClick, favorites, onToggleFa
   const [filterRegion, setFilterRegion] = useState<'all' | 'BR' | 'USA' | 'LATAM'>('all');
   const [minAds, setMinAds] = useState(0);
   const [sortBy, setSortBy] = useState<'newest' | 'active' | 'perf' | 'stability'>('perf');
-  const [isSyncing, setIsSyncing] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [staggeredAds, setStaggeredAds] = useState<Ad[]>([]);
+  const [isDiscovering, setIsDiscovering] = useState(false);
+  const [discoveryMsg, setDiscoveryMsg] = useState("");
 
   // Infinite Scroll State
   const [visibleCount, setVisibleCount] = useState(12);
@@ -76,20 +79,74 @@ const Library: React.FC<LibraryProps> = ({ ads, onAdClick, favorites, onToggleFa
       return matchesSearch && matchesPlatform && matchesNiche && matchesAdsCount && matchesBrand && matchesTime && matchesRegion;
     });
 
-    // Intelligent Sorting Logic
+    // Intelligent Sorting Logic (Weighted AdScale Score)
     if (sortBy === 'perf') {
-      // High Rating + High Volume
-      result.sort((a, b) => (b.rating * b.adCount) - (a.rating * a.adCount));
+      result.sort((a, b) => {
+        const scoreA =
+          ((a.adCount || 0) * 0.5) +
+          ((a.performance?.daysActive || 0) * 0.3) +
+          ((a.rating || 0) * 20); // Normalized rating weight
+        const scoreB =
+          ((b.adCount || 0) * 0.5) +
+          ((b.performance?.daysActive || 0) * 0.3) +
+          ((b.rating || 0) * 20);
+        return scoreB - scoreA;
+      });
     }
     else if (sortBy === 'newest') result.sort((a, b) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime());
-    else if (sortBy === 'active') result.sort((a, b) => b.adCount - a.adCount);
+    else if (sortBy === 'active') result.sort((a, b) => (b.adCount || 0) - (a.adCount || 0));
     else if (sortBy === 'stability') {
-      // Stability = Oldest active ads (Longest running)
-      result.sort((a, b) => new Date(a.addedAt).getTime() - new Date(b.addedAt).getTime());
+      result.sort((a, b) => (b.performance?.daysActive || 0) - (a.performance?.daysActive || 0));
     }
 
     return result;
   }, [ads, debouncedSearchTerm, filterPlatform, filterNiche, filterTimeframe, filterRegion, minAds, currentBrand, sortBy]);
+
+  // Effect for Sequential "Discovery" Reveal
+  useEffect(() => {
+    if (filteredAds.length === 0) {
+      setStaggeredAds([]);
+      return;
+    }
+
+    setIsDiscovering(true);
+    setStaggeredAds([]); // Reset for new batch
+
+    const DISCOVERY_STEPS = [
+      "INTERCEPTANDO SINAIS DO LEILÃO...",
+      "ANALISANDO PADRÕES DE ESCALA...",
+      "VALIDANDO 2.000+ CRIATIVOS...",
+      "FILTRANDO O OURO...",
+      "INTELIGÊNCIA PRONTA."
+    ];
+
+    let stepIdx = 0;
+    const msgInterval = setInterval(() => {
+      setDiscoveryMsg(DISCOVERY_STEPS[stepIdx]);
+      stepIdx++;
+      if (stepIdx >= DISCOVERY_STEPS.length) clearInterval(msgInterval);
+    }, 400);
+
+    const initialBatch = filteredAds.slice(0, 4);
+    setStaggeredAds(initialBatch);
+
+    let currentIdx = 4;
+    const revealInterval = setInterval(() => {
+      if (currentIdx >= Math.min(filteredAds.length, visibleCount)) {
+        clearInterval(revealInterval);
+        setIsDiscovering(false);
+        return;
+      }
+
+      setStaggeredAds(prev => [...prev, filteredAds[currentIdx]]);
+      currentIdx++;
+    }, 100); // 100ms per card reveal
+
+    return () => {
+      clearInterval(revealInterval);
+      clearInterval(msgInterval);
+    };
+  }, [filteredAds, visibleCount]);
 
   const handleSync = useCallback(() => {
     setIsSyncing(true);
@@ -118,13 +175,10 @@ const Library: React.FC<LibraryProps> = ({ ads, onAdClick, favorites, onToggleFa
   }, [visibleCount, filteredAds.length]);
 
   const displayedAds = useMemo(() => {
-    let list = filteredAds.slice(0, visibleCount);
-    if (!isSubscribed) {
-      // Show only 4 ads for non-subscribers
-      list = filteredAds.slice(0, 4);
-    }
-    return list;
-  }, [filteredAds, visibleCount, isSubscribed]);
+    // When discovering, we use the staggered list
+    // When done or for initial small sets, we use the already calculated staggeredAds
+    return staggeredAds;
+  }, [staggeredAds]);
 
   const FilterSelect = ({ value, options, onChange, icon: Icon, placeholder }: any) => (
     <div className="relative group min-w-[140px] flex-1 lg:flex-none">
@@ -179,6 +233,15 @@ const Library: React.FC<LibraryProps> = ({ ads, onAdClick, favorites, onToggleFa
         </div>
 
         {isScannerOpen && <ScannerModal onClose={() => setIsScannerOpen(false)} />}
+
+        {isDiscovering && (
+          <div className="flex items-center gap-4 bg-blue-600/5 border border-blue-500/20 p-4 rounded-2xl animate-pulse">
+            <Loader2 size={16} className="animate-spin text-blue-500" />
+            <span className="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] italic">
+              {discoveryMsg}
+            </span>
+          </div>
+        )}
 
         <div className="flex flex-col gap-6 bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-white/[0.06] p-6 rounded-[40px] shadow-xl dark:shadow-2xl">
           <div className="relative w-full">
