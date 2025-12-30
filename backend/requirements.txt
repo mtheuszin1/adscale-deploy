@@ -14,3 +14,5 @@ flower
 playwright
 python-dotenv
 email-validator
+beautifulsoup4
+requests
