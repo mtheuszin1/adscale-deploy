@@ -99,7 +99,7 @@ export const dbService = {
   // Importação Otimizada (Chunked)
   importAds: async (ads: Ad[]): Promise<void> => {
     try {
-      const CHUNK_SIZE = 50; // Reduzido para garantir estabilidade com downloads
+      const CHUNK_SIZE = 200; // Aumentado para velocidade turbo com backend paralelo
       const total = ads.length;
 
       console.log(`[dbService] Iniciando importação massiva de ${total} itens (Chunks de ${CHUNK_SIZE})...`);

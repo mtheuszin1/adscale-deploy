@@ -77,47 +77,58 @@ def import_ads_task(ads_data: list):
     """
     print(f"[Worker] Starting bulk import of {len(ads_data)} ads")
     db = SyncSessionLocal()
-    try:
-        incoming_ids = [ad['id'] for ad in ads_data]
-        
-        # 1. Fetch existing ads in bulk
-        # Note: sync version uses select same way but execution is different
-        stmt = select(AdModel).where(AdModel.id.in_(incoming_ids))
-        result = db.execute(stmt)
-        existing_map = {rec.id: rec for rec in result.scalars().all()}
-        
-        new_objects = []
-        updated_count = 0
-        
-        for ad_dict in ads_data:
-            # Persistence Logic: Download media if it's an external URL
-            original_media = ad_dict.get('mediaUrl')
-            if original_media:
-                local_path = download_file(original_media, ad_dict['id'])
-                if local_path:
-                    ad_dict['mediaUrl'] = local_path
-                    # Also update thumbnail if it's the same
-                    if ad_dict.get('thumbnail') == original_media:
-                        ad_dict['thumbnail'] = local_path
+    from concurrent.futures import ThreadPoolExecutor
 
-            if ad_dict['id'] in existing_map:
-                # Update existing
-                existing_rec = existing_map[ad_dict['id']]
+    def process_ad(ad_dict):
+        # Persistence Logic: Download media if it's an external URL
+        original_media = ad_dict.get('mediaUrl')
+        if original_media:
+            local_path = download_file(original_media, ad_dict['id'])
+            if local_path:
+                ad_dict['mediaUrl'] = local_path
+                # Also update thumbnail if it's the same
+                if ad_dict.get('thumbnail') == original_media:
+                    ad_dict['thumbnail'] = local_path
+
+        # Sub-DB session for this thread
+        thread_db = SyncSessionLocal()
+        try:
+            from .models import AdHistoryModel
+            existing = thread_db.query(AdModel).filter(AdModel.id == ad_dict['id']).first()
+            if existing:
                 for k, v in ad_dict.items():
-                    if hasattr(existing_rec, k):
-                        setattr(existing_rec, k, v)
-                updated_count += 1
+                    if hasattr(existing, k):
+                        setattr(existing, k, v)
+                # History
+                history = AdHistoryModel(ad_id=ad_dict['id'], adCount=ad_dict.get('adCount', 1))
+                thread_db.add(history)
+                thread_db.commit()
+                return "updated"
             else:
-                # Create new
                 new_ad = AdModel(**ad_dict)
-                new_objects.append(new_ad)
+                thread_db.add(new_ad)
+                # History
+                history = AdHistoryModel(ad_id=ad_dict['id'], adCount=ad_dict.get('adCount', 1))
+                thread_db.add(history)
+                thread_db.commit()
+                return "created"
+        except Exception as e:
+            print(f"[Worker] Row Error: {e}")
+            thread_db.rollback()
+            return "error"
+        finally:
+            thread_db.close()
+
+    try:
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            results = list(executor.map(process_ad, ads_data))
         
-        if new_objects:
-            db.add_all(new_objects)
-            
-        db.commit()
-        print(f"[Worker] Import complete. Created: {len(new_objects)}, Updated: {updated_count}")
-        return {"created": len(new_objects), "updated": updated_count}
+        created = results.count("created")
+        updated = results.count("updated")
+        errors = results.count("error")
+        
+        print(f"[Worker] Import complete. Created: {created}, Updated: {updated}, Errors: {errors}")
+        return {"created": created, "updated": updated, "errors": errors}
     except Exception as e:
         print(f"[Worker] API Import Failed: {e}")
         db.rollback()
