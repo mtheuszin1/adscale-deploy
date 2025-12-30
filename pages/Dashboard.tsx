@@ -125,14 +125,14 @@ const Dashboard: React.FC<DashboardProps> = ({ ads, onAdClick, onNavigate, isSub
 
           <div key={activeIndex} className="relative z-10 w-full max-w-[360px] transform transition-all duration-1000 animate-in fade-in zoom-in-95 slide-in-from-right-16">
             {featuredAds.length > 0 ? (
-              <div className="shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] rounded-[40px] overflow-hidden hover:rotate-2 transition-transform duration-500 bg-white">
-                <div className="absolute inset-0 border-4 border-blue-600/5 rounded-[40px] pointer-events-none z-30" />
+              <div className="shadow-[0_60px_120px_-20px_rgba(0,0,0,0.3)] rounded-[40px] overflow-hidden bg-white ring-8 ring-amber-400/20">
                 <AdCard
                   ad={featuredAds[activeIndex]}
                   onClick={onAdClick}
                   isSubscribed={isSubscribed}
                   isFavorite={false}
                   onToggleFavorite={handleToggleFavorite}
+                  variant="hero"
                 />
               </div>
             ) : (

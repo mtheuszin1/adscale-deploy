@@ -10,9 +10,10 @@ interface AdCardProps {
   isFavorite?: boolean;
   onToggleFavorite?: (id: string) => void;
   isSubscribed?: boolean;
+  variant?: 'default' | 'hero';
 }
 
-const AdCard: React.FC<AdCardProps> = memo(({ ad, onClick, isFavorite, onToggleFavorite }) => {
+const AdCard: React.FC<AdCardProps> = memo(({ ad, onClick, isFavorite, onToggleFavorite, variant = 'default' }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -35,14 +36,15 @@ const AdCard: React.FC<AdCardProps> = memo(({ ad, onClick, isFavorite, onToggleF
 
   useEffect(() => {
     if (videoRef.current) {
-      if (isHovered) {
+      if (isHovered || variant === 'hero') {
         videoRef.current.play().catch(() => { });
+        if (variant === 'hero') videoRef.current.loop = true;
       } else {
         videoRef.current.pause();
         videoRef.current.currentTime = 0;
       }
     }
-  }, [isHovered]);
+  }, [isHovered, variant]);
 
   if (!isVisible) {
     return (
@@ -51,10 +53,66 @@ const AdCard: React.FC<AdCardProps> = memo(({ ad, onClick, isFavorite, onToggleF
   }
 
   const isVideo = ad.mediaUrl.toLowerCase().includes('.mp4') || ad.mediaUrl.toLowerCase().includes('video');
+  const thumb = ad.thumbnail || `https://ui-avatars.com/api/?name=${encodeURIComponent(ad.title)}&background=1e293b&color=3b82f6&size=512&bold=true`;
+
+  if (variant === 'hero') {
+    return (
+      <div
+        ref={cardRef}
+        onClick={() => onClick(ad)}
+        className="bg-white rounded-[40px] overflow-hidden transition-all duration-700 cursor-pointer flex flex-col h-full shadow-2xl relative border-4 border-amber-400 group hover:scale-[1.02] active:scale-95"
+      >
+        {/* Prize Glow Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-400/20 via-transparent to-blue-600/10 opacity-50 z-0" />
+
+        <div className="relative flex-1 overflow-hidden bg-slate-900 flex items-center justify-center">
+          {/* Shine Sweep Animation */}
+          <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
+            <div className="absolute -inset-full top-0 h-full w-1/2 bg-gradient-to-r from-transparent via-white/40 to-transparent -skew-x-12 animate-[shimmer_3s_infinite]" />
+          </div>
+
+          {isVideo ? (
+            <video
+              ref={videoRef}
+              src={ad.mediaUrl}
+              poster={thumb}
+              muted
+              loop
+              playsInline
+              autoPlay
+              className="w-full h-full object-cover"
+              key={ad.mediaUrl}
+            />
+          ) : (
+            <img src={thumb} alt={ad.title} className="w-full h-full object-cover" />
+          )}
+
+          {/* Floating 'ACTIVE ADS' Badge - High Contrast Prize Style */}
+          <div className="absolute top-6 left-6 z-20">
+            <div className="bg-gradient-to-r from-red-600 to-rose-500 text-white px-6 py-3 rounded-2xl flex items-center gap-3 shadow-[0_10px_30px_-5px_rgba(225,29,72,0.6)] border border-white/20">
+              <div className="w-2.5 h-2.5 bg-white rounded-full animate-pulse shadow-[0_0_10px_white]" />
+              <span className="text-[14px] font-[900] uppercase tracking-tighter italic">
+                {ad.adCount} ADS ATIVOS
+              </span>
+            </div>
+          </div>
+
+          {/* Title Overlay on Hover */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-10 gap-2 z-20">
+            <h4 className="text-white font-[950] italic uppercase tracking-tighter text-2xl leading-none">
+              {ad.title}
+            </h4>
+            <div className="flex items-center gap-2 text-amber-400 text-xs font-black uppercase tracking-widest italic">
+              <MapPin size={12} fill="currentColor" className="text-amber-400" /> {ad.targeting?.locations?.[0]?.country || 'Brasil'}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Fallbacks otimizados com cores mais visíveis
   const brandLogo = ad.brandLogo || `https://ui-avatars.com/api/?name=${encodeURIComponent(ad.title)}&background=3b82f6&color=fff&size=256&bold=true`;
-  const thumb = ad.thumbnail || `https://ui-avatars.com/api/?name=${encodeURIComponent(ad.title)}&background=1e293b&color=3b82f6&size=512&bold=true`;
   const primaryLocation = ad.targeting?.locations?.[0] || { country: 'Brasil', flag: '🇧🇷' };
 
   const handleToggleExpand = (e: React.MouseEvent) => {
@@ -73,7 +131,6 @@ const AdCard: React.FC<AdCardProps> = memo(({ ad, onClick, isFavorite, onToggleF
       {/* HEADER BRANCO - DESTAQUE TOTAL */}
       <div className="bg-white p-6 pt-8 pb-6 relative z-10">
         <div className="flex items-start gap-4 mb-6">
-          {/* LOGO - Agora em fundo claro para contraste real */}
           <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center overflow-hidden shrink-0 shadow-md border border-slate-100">
             <img
               src={brandLogo}

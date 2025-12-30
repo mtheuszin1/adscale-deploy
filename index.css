@@ -1,1 +1,14 @@
-/* Main CSS entry point - Styles are primarily handled in index.html via CDN and internal style tag */
+/* M@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) skewX(-12deg); }
+  50% { transform: translateX(100%) skewX(-12deg); }
+  100% { transform: translateX(100%) skewX(-12deg); }
+}
+
+.transition-theme {
+  transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+}
+ are primarily handled in index.html via CDN and internal style tag */
