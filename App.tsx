@@ -22,10 +22,7 @@ const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [ads, setAds] = useState<Ad[]>([]);
   const [selectedAd, setSelectedAd] = useState<Ad | null>(null);
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    const saved = localStorage.getItem('adscale_theme');
-    return (saved as 'dark' | 'light') || 'dark';
-  });
+  const [theme] = useState<'dark'>('dark');
 
   const loadAds = async () => {
     try {
@@ -57,23 +54,12 @@ const App: React.FC = () => {
   useEffect(() => {
     const root = window.document.documentElement;
     const body = window.document.body;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-      root.classList.remove('light');
-      body.classList.add('dark');
-      body.classList.remove('light');
-    } else {
-      root.classList.add('light');
-      root.classList.remove('dark');
-      body.classList.add('light');
-      body.classList.remove('dark');
-    }
-    localStorage.setItem('adscale_theme', theme);
-  }, [theme]);
+    root.classList.add('dark');
+    root.classList.remove('light');
+    body.classList.add('dark');
+    body.classList.remove('light');
+  }, []);
 
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-  };
 
   const handleLogin = async (email: string, password: string, name?: string) => {
     try {
@@ -216,12 +202,7 @@ const App: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-4 lg:gap-6">
-          <button
-            onClick={toggleTheme}
-            className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-all border border-slate-200 dark:border-white/5"
-          >
-            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
+          {/* Theme toggle removed to maintain premium dark aesthetic */}
 
           {!hasAccess && (
             <button onClick={() => setCurrentPage('pricing')} className="hidden sm:flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest italic shadow-lg shadow-emerald-500/20 transition-all active:scale-95">

@@ -314,7 +314,7 @@ from .permissions import verify_subscription_access
 
 
 @app.get("/ads", response_model=List[Ad])
-async def get_ads(db: AsyncSession = Depends(get_db), current_user = Depends(get_current_user)):
+async def get_ads(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(AdModel).order_by(AdModel.addedAt.desc()))
     ads = result.scalars().all()
     return [ad.to_dict() for ad in ads]
