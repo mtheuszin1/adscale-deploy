@@ -67,16 +67,33 @@ class ScanRequest(BaseModel):
 
 @app.post("/scan-ad")
 async def scan_ad(request: ScanRequest, current_user = Depends(get_current_user)):
-    # Trigger Async Task
-    task = scan_ad_task.delay(request.url)
-    return {
-        "task_id": task.id,
-        "status": "processing", 
-        "message": "Scan started in background"
-    }
+    try:
+        # Try to use Celery
+        task = scan_ad_task.delay(request.url)
+        return {
+            "task_id": task.id,
+            "status": "processing", 
+            "message": "Scan started in background"
+        }
+    except Exception as e:
+        # FALLBACK: If Redis/Celery fails, run synchronously for LOCAL DEV
+        log_to_file(f"Celery failed ({e}), falling back to sync scan")
+        from .scanner import AdScanner
+        scanner = AdScanner()
+        result = scanner.scan_page(request.url)
+        
+        # We simulate a "mock" task_id for the frontend
+        return {
+            "task_id": "sync_mode",
+            "status": "SUCCESS",
+            "result": result
+        }
 
 @app.get("/tasks/{task_id}")
 async def get_task_status(task_id: str):
+    if task_id == "sync_mode":
+        return {"task_id": "sync_mode", "status": "SUCCESS"}
+
     from celery.result import AsyncResult
     task_result = AsyncResult(task_id)
     
@@ -316,20 +333,37 @@ async def create_ad(ad: AdCreate, db: AsyncSession = Depends(get_db), current_us
 
 @app.post("/ads/import")
 async def import_ads(ads: List[AdCreate], db: AsyncSession = Depends(get_db), current_user = Depends(get_current_admin)):
-    import time
-    
-    # Offload to Celery
     ads_data = [ad.dict() for ad in ads]
     
-    # We use .delay() to send to Redis queue
-    task = import_ads_task.delay(ads_data)
-
-    return {
-        "success": True, 
-        "message": "Import started in background",
-        "task_id": task.id,
-        "count": len(ads)
-    }
+    try:
+        # Offload to Celery
+        task = import_ads_task.delay(ads_data)
+        return {
+            "success": True, 
+            "message": "Import started in background",
+            "task_id": task.id,
+            "count": len(ads)
+        }
+    except Exception as e:
+        log_to_file(f"Celery import failed ({e}), falling back to sync mode")
+        # SYNC FALLBACK
+        from .tasks import import_ads_task as sync_import_task
+        from .database import SyncSessionLocal
+        
+        # We run it synchronously
+        try:
+            # import_ads_task expects a list of dicts
+            result = sync_import_task(ads_data)
+            return {
+                "success": True,
+                "message": "Import complete (Synchronous Fallback)",
+                "task_id": "sync_import",
+                "count": ads_data,
+                "details": result
+            }
+        except Exception as sync_e:
+            log_to_file(f"Sync fallback also failed: {sync_e}")
+            raise HTTPException(status_code=500, detail=str(sync_e))
 
 @app.put("/ads/{ad_id}", response_model=Ad)
 async def update_ad(ad_id: str, ad: AdCreate, db: AsyncSession = Depends(get_db)):

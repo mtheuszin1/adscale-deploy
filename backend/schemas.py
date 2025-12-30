@@ -16,7 +16,7 @@ class AdBase(BaseModel):
     thumbnail: Optional[str] = None
     mediaUrl: Optional[str] = None
     mediaHash: Optional[str] = None
-    copy_text: Optional[str] = None
+    copy: Optional[str] = None
     cta: Optional[str] = "Learn More"
     insights: Optional[str] = None
     rating: Optional[float] = 0.0
