@@ -16,8 +16,10 @@ def clean_ads(full_wipe=False):
             db.query(AdModel).delete()
         else:
             # Delete ads that don't have local media (vulnerable to expiration)
-            print("Cleaning up ads without local media via SQLAlchemy...")
-            db.query(AdModel).filter(~AdModel.mediaUrl.like('/media/%')).delete(synchronize_session=False)
+            print("Cleaning up ads with external (non-persisted) links...")
+            # We delete anything that starts with http (external) 
+            # and keep items that start with /media/ (local)
+            db.query(AdModel).filter(AdModel.mediaUrl.like('http%')).delete(synchronize_session=False)
         
         db.commit()
         print(f"Cleanup finished successfully.")

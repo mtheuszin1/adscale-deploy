@@ -84,6 +84,7 @@ def process_ad_row(row_data):
             "cta": "Saiba Mais",
             "insights": f"Sinal detectado com {ad_count} ativos na região {region_name}.",
             "rating": min(5.0, 3.0 + (ad_count/50.0)),
+            "addedAt": datetime.utcnow(),
             "adCount": ad_count,
             "ticketPrice": "Consultar",
             "funnelType": "Direto",

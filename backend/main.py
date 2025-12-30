@@ -41,9 +41,13 @@ async def startup_event():
             from bulk_importer import run_bulk_import
             
             def run_init():
-                clean_ads(full_wipe=True) # Reset for the new list
+                log_to_file("[Auto-Init] Starting full wipe...")
+                clean_ads(full_wipe=True)
+                log_to_file("[Auto-Init] Starting turbo import...")
                 run_bulk_import(csv_file)
-                # Mark as processed to avoid double run on next restart if file persists in docker layers
+                log_to_file("[Auto-Init] Cleaning up failed downloads...")
+                clean_ads(full_wipe=False) # Remove ads with external (broken) links
+                log_to_file("[Auto-Init] Done.")
                 if os.path.exists(csv_file):
                     os.rename(csv_file, f"{csv_file}.done")
             
