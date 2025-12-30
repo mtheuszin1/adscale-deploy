@@ -110,21 +110,12 @@ const App: React.FC = () => {
   const renderPage = () => {
     switch (currentPage) {
       case 'dashboard':
-        // Guests redirect to Library
-        return user ? (
+        return (
           <Dashboard
             ads={ads}
             onAdClick={setSelectedAd}
             onNavigate={setCurrentPage}
-          />
-        ) : (
-          <Library
-            ads={ads}
-            onAdClick={setSelectedAd}
-            favorites={[]}
-            onToggleFavorite={() => setCurrentPage('auth')}
-            isSubscribed={false}
-            onNavigate={setCurrentPage}
+            isSubscribed={hasAccess}
           />
         );
       case 'library':
