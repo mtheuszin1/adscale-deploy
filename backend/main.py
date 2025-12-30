@@ -31,7 +31,7 @@ app = FastAPI()
 
 @app.on_event("startup")
 async def startup_event():
-    csv_file = "scalatracker_novo.csv"
+    csv_file = "scalatracker_final.csv"
     if os.path.exists(csv_file):
         print(f"[Auto-Init] Found {csv_file}, triggering cleanup and turbo import...")
         try:
