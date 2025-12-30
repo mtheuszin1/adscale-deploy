@@ -1,14 +1,37 @@
-/* M@tailwind base;
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @keyframes shimmer {
-  0% { transform: translateX(-100%) skewX(-12deg); }
-  50% { transform: translateX(100%) skewX(-12deg); }
-  100% { transform: translateX(100%) skewX(-12deg); }
+  0% {
+    transform: translateX(-100%) skewX(-12deg);
+  }
+
+  50% {
+    transform: translateX(100%) skewX(-12deg);
+  }
+
+  100% {
+    transform: translateX(100%) skewX(-12deg);
+  }
+}
+
+@keyframes card-swap {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px) rotate(-2deg);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0) rotate(0deg);
+  }
+}
+
+.animate-card-swap {
+  animation: card-swap 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 .transition-theme {
   transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
 }
- are primarily handled in index.html via CDN and internal style tag */

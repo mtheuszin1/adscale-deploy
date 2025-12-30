@@ -123,7 +123,7 @@ const Dashboard: React.FC<DashboardProps> = ({ ads, onAdClick, onNavigate, isSub
         <div className="flex-1 bg-slate-100/50 p-8 lg:p-20 flex items-center justify-center relative min-h-[500px]">
           <div className="absolute inset-0 bg-gradient-to-r from-slate-50/50 to-transparent z-0" />
 
-          <div key={activeIndex} className="relative z-10 w-full max-w-[360px] aspect-[4/6] transform transition-all duration-1000 animate-in fade-in zoom-in-95 slide-in-from-right-16 overflow-visible">
+          <div key={activeIndex} className="relative z-10 w-full max-w-[360px] aspect-[4/6] animate-card-swap overflow-visible">
             {featuredAds.length > 0 ? (
               <div className="shadow-[0_60px_120px_-20px_rgba(0,0,0,0.3)] rounded-[40px] overflow-hidden bg-white ring-8 ring-amber-400/20 h-full">
                 <AdCard
