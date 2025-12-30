@@ -29,6 +29,29 @@ def log_to_file(msg):
 
 app = FastAPI()
 
+@app.on_event("startup")
+async def startup_event():
+    csv_file = "scalatracker_novo.csv"
+    if os.path.exists(csv_file):
+        print(f"[Auto-Init] Found {csv_file}, triggering cleanup and turbo import...")
+        try:
+            # We run this in a thread to not block the main loop if its very slow
+            import threading
+            from clean_ads import clean_ads
+            from bulk_importer import run_bulk_import
+            
+            def run_init():
+                clean_ads()
+                run_bulk_import(csv_file)
+                # Mark as processed to avoid double run on next restart if file persists in docker layers
+                if os.path.exists(csv_file):
+                    os.rename(csv_file, f"{csv_file}.done")
+            
+            thread = threading.Thread(target=run_init)
+            thread.start()
+        except Exception as e:
+            print(f"[Auto-Init] Critical error: {e}")
+
 
 # Allow CORS for local development
 
