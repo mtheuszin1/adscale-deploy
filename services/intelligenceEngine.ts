@@ -7,7 +7,7 @@ export interface PlatformInsight {
   avgCtrScaling: number;
   avgDaysActiveScaling: number;
   avgAdCountScaling: number;
-  scalingRate: number; 
+  scalingRate: number;
   totalAds: number;
   efficiencyIndex: number; // Relação entre longevidade e adCount
 }
@@ -48,9 +48,9 @@ export interface LibraryIntelligence {
  * COLLECTIVE INTELLIGENCE SCRIPT
  * Desenvolvido para analisar a biblioteca como um todo e gerar baselines de mercado interno.
  */
-export const analyzeLibrary = (ads: Ad[]): LibraryIntelligence => {
+export const analyzeLibrary = (ads: Ad[]): LibraryIntelligence | null => {
   const totalAds = ads.length;
-  if (totalAds === 0) throw new Error("Database empty: Analysis aborted.");
+  if (totalAds === 0) return null;
 
   // Agregadores Temporários
   const platformStats: Record<string, any> = {};
@@ -91,7 +91,7 @@ export const analyzeLibrary = (ads: Ad[]): LibraryIntelligence => {
       platformStats[p].scaling.sumCtr += ctr;
       platformStats[p].scaling.sumDays += days;
       platformStats[p].scaling.sumAdCount += count;
-      
+
       // Tracking de tempo para escala
       totalDaysToScale += days;
       countToScale++;
@@ -109,7 +109,7 @@ export const analyzeLibrary = (ads: Ad[]): LibraryIntelligence => {
     // 3. Detecção de Falsos Positivos (Hype Pattern)
     // Se CTR é muito superior à média da plataforma mas o anúncio é novo e sem volume
     // No loop inicial não temos a média, então usamos heurísticas baseadas em regras de mercado
-    const platformHypeLimit = p === Platform.TIKTOK ? 7 : 5; 
+    const platformHypeLimit = p === Platform.TIKTOK ? 7 : 5;
     if (ctr > platformHypeLimit && days < 4 && count < 3) {
       totalHypeDetected++;
     }
@@ -189,7 +189,7 @@ export const analyzeLibrary = (ads: Ad[]): LibraryIntelligence => {
 export const calculateContextualScore = (ad: Ad, intelligence: LibraryIntelligence): number => {
   const baseline = intelligence.baselines[ad.platform];
   const insight = intelligence.platformInsights[ad.platform];
-  
+
   let score = 50; // Início Neutro
 
   // 1. Análise de CTR vs Baseline Real da Biblioteca

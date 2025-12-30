@@ -17,7 +17,9 @@ export const dbService = {
 
       // Atualiza inteligência localmente (ou poderia ser no backend)
       const intel = analyzeLibrary(ads);
-      localStorage.setItem(INTEL_KEY, JSON.stringify(intel));
+      if (intel) {
+        localStorage.setItem(INTEL_KEY, JSON.stringify(intel));
+      }
 
       return ads;
     } catch (error) {

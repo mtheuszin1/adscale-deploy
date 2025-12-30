@@ -12,13 +12,22 @@ MEDIA_DIR = "backend/media"
 if not os.path.exists(MEDIA_DIR):
     os.makedirs(MEDIA_DIR, exist_ok=True)
 
+# Reuse session for connection pooling
+_session = requests.Session()
+_session.headers.update({
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Referer': 'https://www.facebook.com/',
+    'Connection': 'keep-alive'
+})
+
 def download_file(url: str, ad_id: str) -> Optional[str]:
     """Downloads a file and returns the local path relative to backend root."""
     try:
         if not url or not url.startswith("http"):
             return None
             
-        # Avoid re-downloading local files
         if url.startswith("/media/"):
             return url
 
@@ -26,7 +35,7 @@ def download_file(url: str, ad_id: str) -> Optional[str]:
         clean_url = url.split("?")[0].split("#")[0]
         ext = clean_url.split(".")[-1].lower() if "." in clean_url else "mp4"
         if len(ext) > 4 or not ext.isalnum():
-            ext = "mp4" # fallback
+            ext = "mp4" 
             
         filename = f"{ad_id}_{hashlib.md5(url.encode()).hexdigest()[:8]}.{ext}"
         filepath = os.path.join(MEDIA_DIR, filename)
@@ -34,24 +43,12 @@ def download_file(url: str, ad_id: str) -> Optional[str]:
         if os.path.exists(filepath):
             return f"/media/{filename}"
             
-        print(f"[Worker] Downloading media: {url}")
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Referer': 'https://www.facebook.com/',
-            'Connection': 'keep-alive',
-            'Upgrade-Insecure-Requests': '1'
-        }
-        response = requests.get(url, stream=True, timeout=60, headers=headers)
+        response = _session.get(url, stream=True, timeout=30)
         if response.status_code == 200:
             with open(filepath, 'wb') as f:
-                for chunk in response.iter_content(chunk_size=8192):
+                for chunk in response.iter_content(chunk_size=16384):
                     f.write(chunk)
-            print(f"[Worker] Save complete: {filepath}")
             return f"/media/{filename}"
-        else:
-            print(f"[Worker] Download failed with status: {response.status_code}")
         return None
     except Exception as e:
         print(f"[Worker] Error downloading {url}: {e}")
@@ -120,7 +117,7 @@ def import_ads_task(ads_data: list):
             thread_db.close()
 
     try:
-        with ThreadPoolExecutor(max_workers=10) as executor:
+        with ThreadPoolExecutor(max_workers=20) as executor:
             results = list(executor.map(process_ad, ads_data))
         
         created = results.count("created")
