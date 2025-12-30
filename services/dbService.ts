@@ -65,6 +65,26 @@ export const dbService = {
     }
   },
 
+  batchDeleteAds: async (ids: string[]): Promise<void> => {
+    try {
+      await api.batchDeleteAds(ids);
+      window.dispatchEvent(new Event('databaseUpdated'));
+    } catch (e) {
+      console.error("Batch delete failed", e);
+      throw e;
+    }
+  },
+
+  clearAllAds: async (): Promise<void> => {
+    try {
+      await api.clearAllAds();
+      window.dispatchEvent(new Event('databaseUpdated'));
+    } catch (e) {
+      console.error("Clear ads failed", e);
+      throw e;
+    }
+  },
+
   // Batch update (parallel requests)
   batchUpdate: async (ads: Ad[]): Promise<void> => {
     try {

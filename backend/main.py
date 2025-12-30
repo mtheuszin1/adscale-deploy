@@ -451,6 +451,34 @@ async def delete_ad(ad_id: str, db: AsyncSession = Depends(get_db), current_user
         return {"ok": True}
     raise HTTPException(status_code=404, detail="Ad not found")
 
+@app.post("/ads/batch-delete")
+async def batch_delete_ads(ad_ids: List[str], db: AsyncSession = Depends(get_db), current_user = Depends(get_current_admin)):
+    try:
+        from sqlalchemy import delete
+        await db.execute(delete(AdModel).where(AdModel.id.in_(ad_ids)))
+        await db.commit()
+        return {"ok": True, "count": len(ad_ids)}
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/ads/clear")
+async def clear_all_ads(db: AsyncSession = Depends(get_db), current_user = Depends(get_current_admin)):
+    try:
+        from sqlalchemy import delete
+        await db.execute(delete(AdHistoryModel))
+        await db.execute(delete(AdModel))
+        await db.commit()
+        # Also clean up the media folder
+        import shutil
+        if os.path.exists(MEDIA_PATH):
+            shutil.rmtree(MEDIA_PATH)
+            os.makedirs(MEDIA_PATH, exist_ok=True)
+        return {"ok": True, "message": "All ads and media cleared"}
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
 # --- AI & ANALYTICS ROUTES ---
 
 from .ai_engine import ai_engine

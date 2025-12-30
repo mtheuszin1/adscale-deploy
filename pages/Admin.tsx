@@ -347,6 +347,25 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
               >
                 <Upload size={14} /> Importar CSV
               </button>
+              <button
+                onClick={async () => {
+                  if (window.confirm("ATENÇÃO: Isso irá excluir TODOS os anúncios do banco de dados permanentemente. Continuar?")) {
+                    setIsProcessing('clear');
+                    try {
+                      await dbService.clearAllAds();
+                      alert("Banco de dados limpo com sucesso.");
+                    } catch (e: any) {
+                      alert("Erro ao limpar banco: " + e.message);
+                    } finally {
+                      setIsProcessing(null);
+                    }
+                  }
+                }}
+                disabled={isProcessing === 'clear'}
+                className="bg-rose-600 hover:bg-rose-500 text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest italic flex items-center gap-2 shadow-xl shadow-rose-600/30 transition-all active:scale-95 whitespace-nowrap disabled:opacity-50"
+              >
+                {isProcessing === 'clear' ? <Loader2 className="animate-spin" size={14} /> : <Trash2 size={14} />} LIMPAR TUDO
+              </button>
             </div>
           </div>
 
@@ -369,6 +388,25 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
                       <button onClick={() => handleBatchUpdate(a => ({ ...a, isFeatured: true }))} className="bg-white/10 hover:bg-white/20 text-white p-2.5 rounded-xl transition-all" title="Adicionar ao Frontline"><Pin size={16} /></button>
                       <button onClick={() => handleBatchUpdate(a => ({ ...a, isFeatured: false }))} className="bg-white/10 hover:bg-white/20 text-white p-2.5 rounded-xl transition-all" title="Remover do Frontline"><PinOff size={16} /></button>
                       <button onClick={() => handleBatchUpdate(a => ({ ...a, status: AdStatus.SCALING }))} className="bg-white/10 hover:bg-white/20 text-white p-2.5 rounded-xl transition-all" title="Mudar para Escalando"><TrendingUp size={16} /></button>
+                      <button
+                        onClick={async () => {
+                          if (window.confirm(`Deseja excluir os ${selectedIds.size} anúncios selecionados?`)) {
+                            setIsProcessing('batch-delete');
+                            try {
+                              await dbService.batchDeleteAds(Array.from(selectedIds));
+                              setSelectedIds(new Set());
+                            } catch (e: any) {
+                              alert("Erro ao excluir: " + e.message);
+                            } finally {
+                              setIsProcessing(null);
+                            }
+                          }
+                        }}
+                        className="bg-rose-500/20 hover:bg-rose-500 text-rose-500 hover:text-white p-2.5 rounded-xl transition-all"
+                        title="Excluir Selecionados"
+                      >
+                        <Trash2 size={16} />
+                      </button>
                       <div className="w-px h-6 bg-white/20 mx-1" />
                       <button onClick={() => setSelectedIds(new Set())} className="p-2.5 text-white/60 hover:text-white"><X size={16} /></button>
                     </div>

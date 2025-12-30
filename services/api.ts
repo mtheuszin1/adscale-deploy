@@ -111,6 +111,23 @@ export const api = {
         if (!response.ok) throw new Error('Failed to delete ad');
     },
 
+    batchDeleteAds: async (ids: string[]): Promise<void> => {
+        const response = await fetch(`${API_URL}/ads/batch-delete`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(ids),
+        });
+        if (!response.ok) throw new Error('Failed to batch delete ads');
+    },
+
+    clearAllAds: async (): Promise<void> => {
+        const response = await fetch(`${API_URL}/ads/clear`, {
+            method: 'POST',
+            headers: getHeaders(),
+        });
+        if (!response.ok) throw new Error('Failed to clear ads');
+    },
+
     // --- SCANNER ---
     scanAd: async (url: string): Promise<any> => {
         const response = await fetch(`${API_URL}/scan-ad`, {
