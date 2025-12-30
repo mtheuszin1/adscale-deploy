@@ -13,14 +13,7 @@ export const dbService = {
   getAds: async (): Promise<Ad[]> => {
     try {
       let ads = await api.getAds();
-      if (ads.length === 0) {
-        // Seeding database
-        console.log("Database empty. Seeding initial data...");
-        for (const ad of INITIAL_ADS) {
-          await api.createAd(ad);
-        }
-        ads = await api.getAds();
-      }
+      // Seeding logic removed - Backend manages the data source.
 
       // Atualiza inteligência localmente (ou poderia ser no backend)
       const intel = analyzeLibrary(ads);

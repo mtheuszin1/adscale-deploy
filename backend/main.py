@@ -41,7 +41,7 @@ async def startup_event():
             from bulk_importer import run_bulk_import
             
             def run_init():
-                clean_ads()
+                clean_ads(full_wipe=True) # Reset for the new list
                 run_bulk_import(csv_file)
                 # Mark as processed to avoid double run on next restart if file persists in docker layers
                 if os.path.exists(csv_file):
