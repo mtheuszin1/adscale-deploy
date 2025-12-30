@@ -22,7 +22,7 @@ const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [ads, setAds] = useState<Ad[]>([]);
   const [selectedAd, setSelectedAd] = useState<Ad | null>(null);
-  const [theme] = useState<'dark'>('dark');
+  const [theme] = useState<'light'>('light');
 
   const loadAds = async () => {
     try {
@@ -54,10 +54,10 @@ const App: React.FC = () => {
   useEffect(() => {
     const root = window.document.documentElement;
     const body = window.document.body;
-    root.classList.add('dark');
-    root.classList.remove('light');
-    body.classList.add('dark');
-    body.classList.remove('light');
+    root.classList.add('light');
+    root.classList.remove('dark');
+    body.classList.add('light');
+    body.classList.remove('dark');
   }, []);
 
 
