@@ -53,7 +53,7 @@ const AdCard: React.FC<AdCardProps> = memo(({ ad, onClick, isFavorite, onToggleF
     );
   }
 
-  const isVideo = ad.type === 'VSL' || ad.mediaUrl.toLowerCase().match(/\.(mp4|webm|ogg|mov)$/) || ad.mediaUrl.toLowerCase().includes('video') || ad.mediaUrl.includes('blob:');
+  const isVideo = ad.type === 'VSL' || (ad.mediaUrl || '').toLowerCase().match(/\.(mp4|webm|ogg|mov)$/) || (ad.mediaUrl || '').toLowerCase().includes('video') || (ad.mediaUrl || '').includes('blob:');
   const thumb = ad.thumbnail || `https://ui-avatars.com/api/?name=${encodeURIComponent(ad.title)}&background=1e293b&color=3b82f6&size=512&bold=true`;
   const [mediaError, setMediaError] = useState(false);
 
