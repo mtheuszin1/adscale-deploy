@@ -148,5 +148,50 @@ export const INITIAL_ADS: Ad[] = [
     },
     pixels: ["FB", "GA4"],
     tld: ".com.br"
+  },
+  {
+    id: "tig-889911",
+    title: "FORTUNE TIGER ELITE",
+    brandId: "tiger_master_vsl",
+    brandLogo: "https://ui-avatars.com/api/?name=FT&background=fbbf24&color=78350f&bold=true",
+    platform: Platform.META,
+    niche: Niche.BETTING,
+    type: CreativeType.VSL,
+    status: AdStatus.SCALING,
+    tags: ["Betting", "iGaming", "Escala Extrema"],
+    thumbnail: "https://images.unsplash.com/photo-1596838132731-3301c3fd431b?w=800&q=80",
+    mediaUrl: "https://assets.mixkit.co/videos/preview/mixkit-golden-poker-cards-falling-on-a-black-background-4770-large.mp4",
+    mediaHash: "FT-7766",
+    copy: "A CARTA SOLTOU! 🐯🃏 O Tigrinho está pagando como nunca nas últimas 24h. Veja o padrão de horários que está quebrando a banca.",
+    cta: "Acessar Agora",
+    insights: "Gancho de 'carta soltando' com altíssimo CTR. Estratégia de cloaker e redirecionamento detectada.",
+    rating: 5.0,
+    addedAt: getDateRelative(0),
+    adCount: 412,
+    ticketPrice: "Depósito Mínimo",
+    funnelType: "Direct to Game",
+    salesPageUrl: "https://tiger-signals.pro/vsl",
+    checkoutUrl: "https://tiger-signals.pro/register",
+    libraryUrl: "https://www.facebook.com/ads/library/?view_all_page_id=88331122",
+    performance: {
+      estimatedCtr: 12.4,
+      estimatedCpc: 0.04,
+      daysActive: 3,
+      successProbability: 99,
+      estimatedSpend: "R$ 200k+",
+      cloakerDetected: true,
+      momentum: [50, 120, 280, 350, 412]
+    },
+    siteTraffic: { monthlyVisits: "500k", topSource: "TikTok Ads", deviceSplit: { mobile: 99, desktop: 1 } },
+    techStack: { ecommercePlatform: "Custom", trackingPixels: ["GA4", "FB"], serverCountry: "Brasil" },
+    targeting: { gender: "M/F", ageRange: "20-55", locations: [{ country: "Brasil", flag: "🇧🇷", volume: 412000 }] },
+    forensicData: {
+      lastSeen: "5 seconds ago",
+      firstSeen: "3 days ago",
+      highestActiveAds: 425,
+      highestActiveDate: "Today"
+    },
+    pixels: ["GA4", "FB"],
+    tld: ".pro"
   }
 ];

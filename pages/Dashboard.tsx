@@ -119,13 +119,14 @@ const Dashboard: React.FC<DashboardProps> = ({ ads, onAdClick, onNavigate, isSub
           </div>
         </div>
 
-        {/* Ad Card Slider - O "Card do Lado" que o usuário solicitou */}
+        {/* Ad Card Slider - O "Card do Lado" agora em estilo 'Deck' flutuante */}
         <div className="flex-1 bg-slate-100/50 p-8 lg:p-20 flex items-center justify-center relative min-h-[500px]">
           <div className="absolute inset-0 bg-gradient-to-r from-slate-50/50 to-transparent z-0" />
 
-          <div key={activeIndex} className="relative z-10 w-full max-w-[400px] transform hover:scale-[1.02] transition-all duration-700 animate-in fade-in slide-in-from-right-10">
+          <div key={activeIndex} className="relative z-10 w-full max-w-[360px] transform transition-all duration-1000 animate-in fade-in zoom-in-95 slide-in-from-right-16">
             {featuredAds.length > 0 ? (
-              <div className="shadow-[0_40px_80px_-15px_rgba(0,0,0,0.1)] rounded-3xl overflow-hidden scale-110">
+              <div className="shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] rounded-[40px] overflow-hidden hover:rotate-2 transition-transform duration-500 bg-white">
+                <div className="absolute inset-0 border-4 border-blue-600/5 rounded-[40px] pointer-events-none z-30" />
                 <AdCard
                   ad={featuredAds[activeIndex]}
                   onClick={onAdClick}
@@ -135,21 +136,25 @@ const Dashboard: React.FC<DashboardProps> = ({ ads, onAdClick, onNavigate, isSub
                 />
               </div>
             ) : (
-              <div className="w-full aspect-[4/5] bg-slate-200 rounded-3xl animate-pulse flex items-center justify-center text-slate-400 font-bold uppercase italic text-[10px] tracking-widest">
-                Carregando Radar...
+              <div className="w-full aspect-[4/5] bg-slate-200 rounded-[40px] animate-pulse flex items-center justify-center text-slate-400 font-black uppercase italic text-[10px] tracking-widest">
+                Sincronizando Radar...
               </div>
             )}
 
-            {/* Slider Dots */}
-            <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex gap-2">
+            {/* Slider Dots - Mais discretos */}
+            <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-3">
               {featuredAds.slice(0, 5).map((_, i) => (
                 <div
                   key={i}
-                  className={`h-1.5 rounded-full transition-all duration-500 ${i === activeIndex % 5 ? 'w-8 bg-blue-600' : 'w-2 bg-slate-300'}`}
+                  className={`h-1.5 rounded-full transition-all duration-700 ${i === activeIndex % 5 ? 'w-10 bg-blue-600' : 'w-2 bg-slate-200'}`}
                 />
               ))}
             </div>
           </div>
+
+          {/* Efeito de 'Atrás' do card para dar profundidade de Radar */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[550px] border border-blue-600/5 rounded-[48px] -rotate-6 scale-95 opacity-50 pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[550px] border border-blue-600/5 rounded-[48px] rotate-3 scale-90 opacity-30 pointer-events-none" />
         </div>
       </section>
 
