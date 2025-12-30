@@ -123,9 +123,9 @@ const Dashboard: React.FC<DashboardProps> = ({ ads, onAdClick, onNavigate, isSub
         <div className="flex-1 bg-slate-100/50 p-8 lg:p-20 flex items-center justify-center relative min-h-[500px]">
           <div className="absolute inset-0 bg-gradient-to-r from-slate-50/50 to-transparent z-0" />
 
-          <div key={activeIndex} className="relative z-10 w-full max-w-[360px] transform transition-all duration-1000 animate-in fade-in zoom-in-95 slide-in-from-right-16">
+          <div key={activeIndex} className="relative z-10 w-full max-w-[360px] aspect-[4/6] transform transition-all duration-1000 animate-in fade-in zoom-in-95 slide-in-from-right-16 overflow-visible">
             {featuredAds.length > 0 ? (
-              <div className="shadow-[0_60px_120px_-20px_rgba(0,0,0,0.3)] rounded-[40px] overflow-hidden bg-white ring-8 ring-amber-400/20">
+              <div className="shadow-[0_60px_120px_-20px_rgba(0,0,0,0.3)] rounded-[40px] overflow-hidden bg-white ring-8 ring-amber-400/20 h-full">
                 <AdCard
                   ad={featuredAds[activeIndex]}
                   onClick={onAdClick}
@@ -136,7 +136,7 @@ const Dashboard: React.FC<DashboardProps> = ({ ads, onAdClick, onNavigate, isSub
                 />
               </div>
             ) : (
-              <div className="w-full aspect-[4/5] bg-slate-200 rounded-[40px] animate-pulse flex items-center justify-center text-slate-400 font-black uppercase italic text-[10px] tracking-widest">
+              <div className="w-full h-full bg-slate-200 rounded-[40px] animate-pulse flex items-center justify-center text-slate-400 font-black uppercase italic text-[10px] tracking-widest">
                 Sincronizando Radar...
               </div>
             )}

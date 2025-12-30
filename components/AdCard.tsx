@@ -60,7 +60,7 @@ const AdCard: React.FC<AdCardProps> = memo(({ ad, onClick, isFavorite, onToggleF
       <div
         ref={cardRef}
         onClick={() => onClick(ad)}
-        className="bg-white rounded-[40px] overflow-hidden transition-all duration-700 cursor-pointer flex flex-col h-full shadow-2xl relative border-4 border-amber-400 group hover:scale-[1.02] active:scale-95"
+        className="bg-white rounded-[40px] overflow-hidden transition-all duration-700 cursor-pointer flex flex-col h-full shadow-2xl relative border-4 border-amber-400 group hover:scale-[1.02] active:scale-95 aspect-[4/6]"
       >
         {/* Prize Glow Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-amber-400/20 via-transparent to-blue-600/10 opacity-50 z-0" />
