@@ -89,6 +89,13 @@ export interface Ad {
     highestActiveAds: number;
     highestActiveDate: string;
   };
+  pixels: string[];
+  tld: string;
+}
+
+export interface AdHistory {
+  adCount: number;
+  timestamp: string;
 }
 
 export interface PlatformSettings {

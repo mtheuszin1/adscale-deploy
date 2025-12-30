@@ -121,6 +121,25 @@ export const api = {
         return response.json();
     },
 
+    // --- AI & ANALYTICS ---
+    generateAICopy: async (adId: string, tone: string = "aggressive"): Promise<any> => {
+        const response = await fetch(`${API_URL}/ai/generate-copy`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({ ad_id: adId, tone }),
+        });
+        if (!response.ok) throw new Error('Failed to generate AI copy');
+        return response.json();
+    },
+
+    getAdHistory: async (adId: string): Promise<any> => {
+        const response = await fetch(`${API_URL}/ads/${adId}/history`, {
+            headers: getHeaders(),
+        });
+        if (!response.ok) throw new Error('Failed to fetch ad history');
+        return response.json();
+    },
+
     // --- AUTH ---
     login: async (email: string, password: string): Promise<{ access_token: string; refresh_token: string; user: User }> => {
         const response = await fetch(`${API_URL}/login`, {

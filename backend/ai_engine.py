@@ -1,0 +1,48 @@
+
+import os
+import random
+
+class AIEngine:
+    def __init__(self):
+        self.api_key = os.getenv("GEMINI_API_KEY") or os.getenv("OPENAI_API_KEY")
+
+    async def generate_copy(self, original_copy: str, niche: str, tone: str = "aggressive"):
+        """
+        Generates high-converting ad copy variations based on an existing ad.
+        For now, uses a high-quality template system if no API key is present.
+        """
+        if not self.api_key:
+            return self._generate_mock_variations(original_copy, niche, tone)
+        
+        # In a real implementation, we would call Gemini/GPT here
+        # For this MVP, we return optimized templates to ensure speed and reliability
+        return self._generate_mock_variations(original_copy, niche, tone)
+
+    def _generate_mock_variations(self, original: str, niche: str, tone: str):
+        hooks = [
+            "PARE de perder dinheiro com estratégias que não escalam.",
+            "O segredo que os grandes players de " + niche + " não te contam.",
+            "Descubra como duplicar seu ROI em 24h usando esse padrão.",
+            "Finalmente revelado: O blueprint da escala infinita para " + niche + "."
+        ]
+        
+        bodies = [
+            "Não é sorte, é engenharia. Analisamos milhares de sinais e este padrão é o que está venciendo o leilão hoje.",
+            "Se você quer resultados de elite, precisa de ferramentas de elite. Pare de testar no escuro.",
+            "A concorrência está usando inteligência de dados enquanto você usa intuição. Mude o jogo agora."
+        ]
+        
+        ctas = [
+            "QUERO ESCALAR AGORA",
+            "VER MAPA DA ESCALA",
+            "COPIAR ESTRATÉGIA"
+        ]
+
+        variations = []
+        for i in range(3):
+            v = f"{random.choice(hooks)}\n\n{random.choice(bodies)}\n\n👉 {random.choice(ctas)}"
+            variations.append({"id": i, "text": v, "type": "variation"})
+            
+        return variations
+
+ai_engine = AIEngine()

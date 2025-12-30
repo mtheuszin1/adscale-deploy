@@ -329,6 +329,12 @@ async def create_ad(ad: AdCreate, db: AsyncSession = Depends(get_db), current_us
     db.add(db_ad)
     await db.commit()
     await db.refresh(db_ad)
+    
+    # Record Initial History
+    history = AdHistoryModel(ad_id=db_ad.id, adCount=db_ad.adCount)
+    db.add(history)
+    await db.commit()
+    
     return db_ad.to_dict()
 
 @app.post("/ads/import")
@@ -358,7 +364,7 @@ async def import_ads(ads: List[AdCreate], db: AsyncSession = Depends(get_db), cu
                 "success": True,
                 "message": "Import complete (Synchronous Fallback)",
                 "task_id": "sync_import",
-                "count": ads_data,
+                "count": len(ads_data),
                 "details": result
             }
         except Exception as sync_e:
@@ -389,6 +395,30 @@ async def delete_ad(ad_id: str, db: AsyncSession = Depends(get_db), current_user
         await db.commit()
         return {"ok": True}
     raise HTTPException(status_code=404, detail="Ad not found")
+
+# --- AI & ANALYTICS ROUTES ---
+
+from .ai_engine import ai_engine
+
+class AICopyRequest(BaseModel):
+    ad_id: str
+    tone: Optional[str] = "aggressive"
+
+@app.post("/ai/generate-copy")
+async def generate_ai_copy(req: AICopyRequest, db: AsyncSession = Depends(get_db), current_user = Depends(get_current_user)):
+    result = await db.execute(select(AdModel).where(AdModel.id == req.ad_id))
+    ad = result.scalars().first()
+    if not ad:
+        raise HTTPException(status_code=404, detail="Ad not found")
+    
+    variations = await ai_engine.generate_copy(ad.copy, ad.niche, req.tone)
+    return {"variations": variations}
+
+@app.get("/ads/{ad_id}/history")
+async def get_ad_history(ad_id: str, db: AsyncSession = Depends(get_db), current_user = Depends(get_current_user)):
+    result = await db.execute(select(AdHistoryModel).where(AdHistoryModel.ad_id == ad_id).order_by(AdHistoryModel.timestamp.asc()))
+    history = result.scalars().all()
+    return [h.to_dict() for h in history]
 
 @app.middleware("http")
 async def log_requests(request, call_next):

@@ -306,6 +306,8 @@ export const dbService = {
     const library = getVal(['url biblioteca', 'library url', 'facebook library', 'link biblioteca', 'ad library url']) || '#';
 
     const daysActive = parseInt(getVal(['dias ativos', 'days active', 'running for', 'dias', 'days', 'tempo rodando']) || '1');
+    const displayUrl = getVal(['display url', 'site', 'domínio', 'url']) || salesPage;
+    const tld = displayUrl.includes('.') ? '.' + displayUrl.split('.').pop()?.split('/')[0].split('?')[0] : '.com';
 
     return {
       id,
@@ -331,6 +333,8 @@ export const dbService = {
       salesPageUrl: salesPage,
       checkoutUrl: getVal(['checkout', 'url checkout', 'link checkout', 'checkout url']) || "#",
       libraryUrl: library,
+      pixels: [], // Default empty array
+      tld: tld,
       performance: {
         estimatedCtr: 2.5,
         estimatedCpc: region.code === 'US' ? 1.50 : 0.50, // CPC maior para US

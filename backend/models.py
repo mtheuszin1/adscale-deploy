@@ -58,6 +58,10 @@ class AdModel(Base):
     techStack = Column(JSON)
     targeting = Column(JSON)
     forensicData = Column(JSON, nullable=True)
+    
+    # Advanced Intelligence Fields
+    pixels = Column(JSON, default=[]) # List of detected pixel IDs
+    tld = Column(String, index=True) # Domain TLD (e.g., .com.br, .shop)
 
     def to_dict(self):
         return {
@@ -88,7 +92,24 @@ class AdModel(Base):
             "siteTraffic": self.siteTraffic,
             "techStack": self.techStack,
             "targeting": self.targeting,
-            "forensicData": self.forensicData
+            "forensicData": self.forensicData,
+            "pixels": self.pixels,
+            "tld": self.tld
+        }
+
+class AdHistoryModel(Base):
+    __tablename__ = "ad_history"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    ad_id = Column(String, ForeignKey("ads.id"), nullable=False, index=True)
+    
+    adCount = Column(Integer, nullable=False)
+    timestamp = Column(DateTime(timezone=True), default=func.now())
+
+    def to_dict(self):
+        return {
+            "adCount": self.adCount,
+            "timestamp": self.timestamp.isoformat() if self.timestamp else None
         }
 
 class UserModel(Base):
