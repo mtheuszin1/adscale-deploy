@@ -132,14 +132,14 @@ export function AdminCheckoutHub() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-slate-950">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+            <div className="flex items-center justify-center min-h-screen bg-white">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen p-8 lg:p-12 space-y-12 animate-in fade-in duration-700 bg-[#020617] text-white font-sans selection:bg-emerald-500/30">
+        <div className="min-h-screen p-8 lg:p-12 space-y-12 animate-in fade-in duration-700 bg-slate-50 text-slate-900 font-sans selection:bg-emerald-500/30">
 
             {/* Header Section */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-white/5 pb-8">
@@ -148,8 +148,8 @@ export function AdminCheckoutHub() {
                         <DollarSign size={40} className="text-emerald-500" />
                     </div>
                     <div>
-                        <h1 className="text-4xl font-black italic uppercase tracking-tighter">Checkout Hub</h1>
-                        <p className="text-slate-400 font-medium mt-1 flex items-center gap-2">
+                        <h1 className="text-4xl font-black italic uppercase tracking-tighter text-slate-900">Checkout Hub</h1>
+                        <p className="text-slate-500 font-medium mt-1 flex items-center gap-2">
                             <ShieldCheck size={16} className="text-emerald-500" />
                             Ambiente Seguro de Gestão Financeira
                         </p>
@@ -174,9 +174,9 @@ export function AdminCheckoutHub() {
 
                 {/* 1. Global Status & Pricing */}
                 <div className="space-y-6">
-                    <div className="bg-slate-900/40 border border-white/5 rounded-[32px] p-8 backdrop-blur-xl h-full flex flex-col justify-between">
+                    <div className="bg-white border border-slate-200 rounded-[32px] p-8 shadow-sm h-full flex flex-col justify-between">
                         <div>
-                            <h3 className="text-xl font-black text-white italic uppercase mb-6 flex items-center gap-2">
+                            <h3 className="text-xl font-black text-slate-900 italic uppercase mb-6 flex items-center gap-2">
                                 <LayoutDashboard size={20} className="text-blue-500" /> Configuração Global
                             </h3>
 
@@ -190,7 +190,7 @@ export function AdminCheckoutHub() {
                                             type="number"
                                             value={amount}
                                             onChange={(e) => setAmount(Number(e.target.value))}
-                                            className="w-full bg-slate-950 border border-slate-800 rounded-2xl pl-10 pr-4 py-4 text-white font-mono font-bold focus:border-blue-500 outline-none transition-all"
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-4 text-slate-900 font-mono font-bold focus:border-blue-500 outline-none transition-all"
                                         />
                                     </div>
                                     <p className="text-right text-[10px] font-bold text-emerald-500 italic">
@@ -203,9 +203,9 @@ export function AdminCheckoutHub() {
                                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Status de Vendas</label>
                                     <button
                                         onClick={() => setActive(!active)}
-                                        className={`w-full p-4 rounded-2xl border transition-all flex items-center justify-between group ${active ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-slate-950 border-slate-800'}`}
+                                        className={`w-full p-4 rounded-2xl border transition-all flex items-center justify-between group ${active ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-white border-slate-200'}`}
                                     >
-                                        <span className={`text-sm font-black uppercase italic ${active ? 'text-emerald-500' : 'text-slate-500'}`}>
+                                        <span className={`text-sm font-black uppercase italic ${active ? 'text-emerald-500' : 'text-slate-400'}`}>
                                             {active ? 'Vendas Liberadas' : 'Vendas Encerradas'}
                                         </span>
                                         <div className={`w-12 h-6 rounded-full relative transition-colors ${active ? 'bg-emerald-500' : 'bg-slate-700'}`}>
@@ -219,7 +219,7 @@ export function AdminCheckoutHub() {
                 </div>
 
                 {/* 2. Gateway Integration (PixUP Styled) */}
-                <div className="bg-slate-900/40 border border-white/5 rounded-[32px] p-8 backdrop-blur-xl relative overflow-hidden group">
+                <div className="bg-white border border-slate-200 rounded-[32px] p-8 shadow-sm relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 
                     <div className="relative">
@@ -229,8 +229,8 @@ export function AdminCheckoutHub() {
                                     <Server size={24} className="text-white" />
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-black text-white italic uppercase">Serviço ativo: {gateway.toUpperCase()}</h3>
-                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                                    <h3 className="text-xl font-black text-slate-900 italic uppercase">Serviço ativo: {gateway.toUpperCase()}</h3>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                                         Endpoint: {gateway === 'pixup' ? 'api.pixupbr.com' : 'Gateway Padrao'}
                                     </p>
                                 </div>
@@ -255,7 +255,7 @@ export function AdminCheckoutHub() {
                                     <select
                                         value={gateway}
                                         onChange={(e) => setGateway(e.target.value)}
-                                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-4 text-white text-sm font-bold appearance-none hover:border-slate-700 focus:border-emerald-500 outline-none transition-colors cursor-pointer"
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-4 text-slate-900 text-sm font-bold appearance-none hover:border-slate-300 focus:border-emerald-500 outline-none transition-colors cursor-pointer"
                                     >
                                         <option value="pixup">PixUP - api.pixupbr.com</option>
                                         <option value="stripe">Stripe Payments</option>
@@ -279,7 +279,7 @@ export function AdminCheckoutHub() {
                                             value={credentials.pixup_client_id || ''}
                                             onChange={(e) => updateCredential('pixup_client_id', e.target.value)}
                                             placeholder="Ex: Muzeira_9308..."
-                                            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm font-mono placeholder:text-slate-700 focus:border-emerald-500 outline-none transition-colors"
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-mono placeholder:text-slate-300 focus:border-emerald-500 outline-none transition-colors"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -292,7 +292,7 @@ export function AdminCheckoutHub() {
                                                 value={credentials.pixup_client_secret || ''}
                                                 onChange={(e) => updateCredential('pixup_client_secret', e.target.value)}
                                                 placeholder="••••••••••••••••"
-                                                className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-4 pr-12 py-3 text-white text-sm font-mono placeholder:text-slate-700 focus:border-emerald-500 outline-none transition-colors"
+                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-12 py-3 text-slate-900 text-sm font-mono placeholder:text-slate-300 focus:border-emerald-500 outline-none transition-colors"
                                             />
                                             <button
                                                 type="button"
@@ -319,9 +319,9 @@ export function AdminCheckoutHub() {
             </div>
 
             {/* Transactions Table (Full Width) */}
-            <div className="bg-slate-900/40 border border-white/5 rounded-[32px] p-8 backdrop-blur-xl min-h-[400px]">
+            <div className="bg-white border border-slate-200 rounded-[32px] p-8 shadow-sm min-h-[400px]">
                 <div className="flex items-center justify-between mb-8">
-                    <h3 className="text-xl font-black text-white italic uppercase flex items-center gap-2">
+                    <h3 className="text-xl font-black text-slate-900 italic uppercase flex items-center gap-2">
                         <Activity size={20} className="text-orange-500" /> Transações Recentes
                     </h3>
                     <button onClick={loadData} className="p-2 hover:bg-white/5 rounded-lg transition-colors">
@@ -347,10 +347,10 @@ export function AdminCheckoutHub() {
                                         <span className="text-[10px] font-mono text-slate-600 block w-20 truncate">{tx.id}</span>
                                     </td>
                                     <td className="py-4">
-                                        <span className="text-sm font-black text-white italic">{formatCurrency(tx.amount)}</span>
+                                        <span className="text-sm font-black text-slate-900 italic">{formatCurrency(tx.amount)}</span>
                                     </td>
                                     <td className="py-4">
-                                        <span className="text-[10px] font-black uppercase text-slate-500 bg-slate-950 px-2 py-1 rounded-lg border border-slate-800">
+                                        <span className="text-[10px] font-black uppercase text-slate-500 bg-slate-50 px-2 py-1 rounded-lg border border-slate-200">
                                             {tx.method || 'PIX'}
                                         </span>
                                     </td>

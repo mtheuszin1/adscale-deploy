@@ -67,6 +67,8 @@ export interface Ad {
     estimatedSpend: string;
     cloakerDetected: boolean;
     momentum: number[];
+    saturationLevel?: number;
+    momentumScore?: number;
   };
   siteTraffic: {
     monthlyVisits: string;

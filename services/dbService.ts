@@ -132,6 +132,23 @@ export const dbService = {
     return { niche, escala };
   },
 
+  calculateSaturation: (daysActive: number, adCount: number): number => {
+    const timeFactor = Math.min(60, daysActive) / 60;
+    const volumeFactor = Math.min(100, adCount) / 100;
+    return Math.round((timeFactor * 0.7 + volumeFactor * 0.3) * 100);
+  },
+
+  calculateMomentumScore: (adCount: number, daysActive: number, history: number[] = []): number => {
+    const velocity = adCount / Math.max(1, daysActive);
+    let score = Math.min(10, velocity * 2);
+    if (history.length > 1) {
+      const trend = adCount - history[history.length - 2];
+      if (trend < 0) score *= 0.5;
+      else if (trend > 10) score *= 1.3;
+    }
+    return parseFloat(Math.min(10, score).toFixed(1));
+  },
+
   detectRegion: (data: { infoAds?: string, text?: string }) => {
     let region = { country: "Brasil", flag: "🇧🇷", code: "BR" };
     let inferredByAI = false;
@@ -239,7 +256,9 @@ export const dbService = {
               ...ad.performance,
               estimatedCpc: region.code === 'US' ? 1.50 : 0.50,
               estimatedSpend: region.code === 'US' ? "$ 2k+" : "R$ 5k+",
-              momentum: newMomentum
+              momentum: newMomentum,
+              saturationLevel: dbService.calculateSaturation(ad.performance.daysActive, ad.adCount),
+              momentumScore: dbService.calculateMomentumScore(ad.adCount, ad.performance.daysActive, ad.performance.momentum)
             },
             techStack: {
               ...ad.techStack,
@@ -342,7 +361,9 @@ export const dbService = {
         successProbability: 80,
         estimatedSpend: region.code === 'US' ? "$ 2k+" : "R$ 5k+",
         cloakerDetected: false,
-        momentum: [10, 20, 30, 40, adCount]
+        momentum: [10, 20, 30, 40, adCount],
+        saturationLevel: dbService.calculateSaturation(daysActive, adCount),
+        momentumScore: dbService.calculateMomentumScore(adCount, daysActive, [10, 20, 30, 40, adCount])
       },
       siteTraffic: { monthlyVisits: "N/A", topSource: "Paid Ads", deviceSplit: { mobile: 95, desktop: 5 } },
       techStack: { ecommercePlatform: "Monitorada", trackingPixels: ["FB"], serverCountry: region.country },

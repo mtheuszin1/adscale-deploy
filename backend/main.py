@@ -430,6 +430,16 @@ async def get_ad_history(ad_id: str, db: AsyncSession = Depends(get_db), current
     history = result.scalars().all()
     return [h.to_dict() for h in history]
 
+@app.get("/ai/strategic-decode/{ad_id}")
+async def strategic_decode_ad(ad_id: str, db: AsyncSession = Depends(get_db), current_user = Depends(get_current_user)):
+    result = await db.execute(select(AdModel).where(AdModel.id == ad_id))
+    ad = result.scalars().first()
+    if not ad:
+        raise HTTPException(status_code=404, detail="Ad not found")
+    
+    decode = await ai_engine.strategic_decode(ad.copy, ad.niche)
+    return decode
+
 @app.middleware("http")
 async def log_requests(request, call_next):
     start_time = time.time()

@@ -140,6 +140,14 @@ export const api = {
         return response.json();
     },
 
+    strategicDecode: async (adId: string): Promise<any> => {
+        const response = await fetch(`${API_URL}/ai/strategic-decode/${adId}`, {
+            headers: getHeaders(),
+        });
+        if (!response.ok) throw new Error('Failed to decode ad strategy');
+        return response.json();
+    },
+
     // --- AUTH ---
     login: async (email: string, password: string): Promise<{ access_token: string; refresh_token: string; user: User }> => {
         const response = await fetch(`${API_URL}/login`, {

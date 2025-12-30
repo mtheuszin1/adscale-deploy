@@ -46,7 +46,7 @@ const AdCard: React.FC<AdCardProps> = memo(({ ad, onClick, isFavorite, onToggleF
 
   if (!isVisible) {
     return (
-      <div ref={cardRef} className="bg-slate-200 dark:bg-slate-800/20 border border-slate-200 dark:border-white/5 rounded-[40px] aspect-[3/4.5] animate-pulse" />
+      <div ref={cardRef} className="bg-slate-100 border border-slate-200 rounded-[40px] aspect-[3/4.5] animate-pulse" />
     );
   }
 
@@ -68,7 +68,7 @@ const AdCard: React.FC<AdCardProps> = memo(({ ad, onClick, isFavorite, onToggleF
       onClick={() => onClick(ad)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="bg-white dark:bg-[#0a0f1e] rounded-[40px] overflow-hidden transition-all duration-500 group cursor-pointer flex flex-col h-full shadow-lg hover:shadow-2xl dark:shadow-2xl relative border border-slate-200 dark:border-white/5 hover:scale-[1.01] animate-in fade-in slide-in-from-bottom-4 duration-700"
+      className="bg-white rounded-[40px] overflow-hidden transition-all duration-500 group cursor-pointer flex flex-col h-full shadow-lg hover:shadow-2xl relative border border-slate-200 hover:scale-[1.01] animate-in fade-in slide-in-from-bottom-4 duration-700"
     >
       {/* HEADER BRANCO - DESTAQUE TOTAL */}
       <div className="bg-white p-6 pt-8 pb-6 relative z-10">
@@ -126,25 +126,25 @@ const AdCard: React.FC<AdCardProps> = memo(({ ad, onClick, isFavorite, onToggleF
         <div className="grid grid-cols-2 gap-y-3 gap-x-2">
           <div className="flex items-center gap-1.5">
             <Tag size={12} className="text-blue-500" strokeWidth={3} />
-            <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest italic">NICHO:</span>
-            <span className="text-[9px] font-black text-blue-600 dark:text-blue-500 uppercase italic truncate">{ad.niche}</span>
+            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">NICHO:</span>
+            <span className="text-[9px] font-black text-blue-600 uppercase italic truncate">{ad.niche}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <CircleDollarSign size={12} className="text-blue-500" strokeWidth={3} />
-            <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest italic">TICKET:</span>
-            <span className="text-[9px] font-black text-blue-600 dark:text-blue-500 uppercase italic">{ad.ticketPrice}</span>
+            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">TICKET:</span>
+            <span className="text-[9px] font-black text-blue-600 uppercase italic">{ad.ticketPrice}</span>
           </div>
           <div className="flex items-center gap-1.5 col-span-2">
             <MapPin size={12} className="text-blue-500" strokeWidth={3} />
-            <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest italic">REGIÃO:</span>
+            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">REGIÃO:</span>
             <span className="text-[11px] leading-none ml-1">{primaryLocation.flag}</span>
-            <span className="text-[9px] font-black text-blue-600 dark:text-blue-500 uppercase italic ml-0.5">{primaryLocation.country}</span>
+            <span className="text-[9px] font-black text-blue-600 uppercase italic ml-0.5">{primaryLocation.country}</span>
           </div>
         </div>
       </div>
 
       {/* ÁREA DE MÍDIA - REFORÇADA PARA VISIBILIDADE */}
-      <div className="relative flex-1 overflow-hidden bg-slate-100 dark:bg-slate-900/50 min-h-[260px] flex items-center justify-center">
+      <div className="relative flex-1 overflow-hidden bg-slate-50 min-h-[260px] flex items-center justify-center">
         {isVideo ? (
           <video
             ref={videoRef}
@@ -173,7 +173,7 @@ const AdCard: React.FC<AdCardProps> = memo(({ ad, onClick, isFavorite, onToggleF
             onClick={(e) => { e.stopPropagation(); onToggleFavorite?.(ad.id); }}
             className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all shadow-xl ${isFavorite
               ? 'bg-rose-500 text-white'
-              : 'bg-white/80 dark:bg-black/60 backdrop-blur-md border border-slate-200 dark:border-white/10 text-slate-400 dark:text-white/50 hover:text-slate-900 dark:hover:text-white'
+              : 'bg-white/80 backdrop-blur-md border border-slate-200 text-slate-400 hover:text-slate-900'
               }`}
           >
             <Heart size={20} fill={isFavorite ? "currentColor" : "none"} strokeWidth={isFavorite ? 0 : 2.5} />

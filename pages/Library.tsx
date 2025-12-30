@@ -182,22 +182,22 @@ const Library: React.FC<LibraryProps> = ({ ads, onAdClick, favorites, onToggleFa
 
   const FilterSelect = ({ value, options, onChange, icon: Icon, placeholder }: any) => (
     <div className="relative group min-w-[140px] flex-1 lg:flex-none">
-      <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-white transition-colors pointer-events-none">
+      <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 group-hover:text-blue-600 transition-colors pointer-events-none">
         {Icon && <Icon size={14} />}
       </div>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="bg-white dark:bg-[#161E2E] hover:bg-slate-50 dark:hover:bg-[#1E293B] border border-slate-200 dark:border-white/[0.06] rounded-xl pl-9 pr-8 py-3 text-[10px] font-black text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white uppercase tracking-widest focus:outline-none focus:border-blue-500 dark:focus:border-blue-600/50 appearance-none cursor-pointer transition-all w-full italic"
+        className="bg-white hover:bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-8 py-3 text-[10px] font-black text-slate-600 group-hover:text-slate-900 uppercase tracking-widest focus:outline-none focus:border-blue-500 appearance-none cursor-pointer transition-all w-full italic"
       >
         <option value="all">{placeholder}</option>
         {options.map((opt: any) => (
-          <option key={typeof opt === 'string' ? opt : opt.value} value={typeof opt === 'string' ? opt : opt.value} className="bg-white dark:bg-[#161E2E] text-slate-700 dark:text-slate-300">
+          <option key={typeof opt === 'string' ? opt : opt.value} value={typeof opt === 'string' ? opt : opt.value} className="bg-white text-slate-700">
             {typeof opt === 'string' ? opt.toUpperCase() : opt.label.toUpperCase()}
           </option>
         ))}
       </select>
-      <ChevronDown size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-600 pointer-events-none" />
+      <ChevronDown size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
     </div>
   );
 
@@ -210,10 +210,10 @@ const Library: React.FC<LibraryProps> = ({ ads, onAdClick, favorites, onToggleFa
               <LucideLibrary size={28} />
             </div>
             <div>
-              <h1 className="text-4xl font-black italic uppercase tracking-tighter text-slate-900 dark:text-white leading-none mb-2">
-                {title} <span className="text-blue-600 dark:text-blue-500">PRO</span>
+              <h1 className="text-5xl font-black italic uppercase tracking-tighter text-slate-900 flex items-center gap-4">
+                {title} <span className="text-blue-600">PRO</span>
               </h1>
-              <p className="text-[11px] font-black text-slate-500 dark:text-slate-600 uppercase tracking-[0.4em] italic">{subtitle}</p>
+              <p className="text-[11px] font-black text-slate-500 uppercase tracking-[0.4em] italic">{subtitle}</p>
             </div>
           </div>
 
@@ -243,13 +243,13 @@ const Library: React.FC<LibraryProps> = ({ ads, onAdClick, favorites, onToggleFa
           </div>
         )}
 
-        <div className="flex flex-col gap-6 bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-white/[0.06] p-6 rounded-[40px] shadow-xl dark:shadow-2xl">
+        <div className="flex flex-col gap-6 bg-white border border-slate-200 p-6 rounded-[40px] shadow-sm">
           <div className="relative w-full">
-            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/55" size={20} />
+            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
             <input
               type="text"
               placeholder="Busque por marca, ideia, padrão de copy ou sinal de escala..."
-              className="w-full bg-slate-50 dark:bg-[#161E2E] border border-slate-200 dark:border-white/[0.06] rounded-[24px] py-6 pl-16 pr-8 text-sm font-black text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/55 focus:bg-white dark:focus:bg-[#1E293B] focus:outline-none focus:border-blue-500/50 dark:focus:border-blue-600/50 focus:shadow-[0_0_0_1px_rgba(37,99,235,0.2)] outline-none transition-all italic tracking-widest uppercase"
+              className="w-full bg-slate-50 border border-slate-200 rounded-[24px] py-6 pl-16 pr-8 text-sm font-black text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-blue-500/50 focus:shadow-[0_0_0_1px_rgba(37,99,235,0.2)] outline-none transition-all italic tracking-widest uppercase"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -265,16 +265,16 @@ const Library: React.FC<LibraryProps> = ({ ads, onAdClick, favorites, onToggleFa
               { value: 'newest', label: 'DADOS RECENTES (24H)' }
             ]} onChange={setSortBy} />
 
-            <div className="flex items-center gap-6 bg-white dark:bg-[#161E2E] hover:bg-slate-50 dark:hover:bg-[#1E293B] border border-slate-200 dark:border-white/[0.06] px-8 py-4 rounded-xl flex-1 min-w-[300px] group transition-all">
-              <Layers size={16} className="text-slate-400 dark:text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
+            <div className="flex items-center gap-6 bg-white hover:bg-slate-50 border border-slate-200 px-8 py-4 rounded-xl flex-1 min-w-[300px] group transition-all">
+              <Layers size={16} className="text-slate-400 group-hover:text-slate-900 transition-colors" />
               <div className="flex flex-col shrink-0">
-                <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Filtro de Escala Mínima</span>
-                <span className="text-sm font-black text-blue-600 dark:text-blue-500">{minAds > 0 ? `${minAds}+ Ads Ativos` : 'Todos os Sinais'}</span>
+                <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest group-hover:text-slate-900 transition-colors">Filtro de Escala Mínima</span>
+                <span className="text-sm font-black text-blue-600">{minAds > 0 ? `${minAds}+ Ads Ativos` : 'Todos os Sinais'}</span>
               </div>
               <input
                 type="range" min="0" max="100" step="5" value={minAds}
                 onChange={(e) => setMinAds(parseInt(e.target.value))}
-                className="w-full h-1 bg-slate-200 dark:bg-[#1E293B] rounded-full appearance-none cursor-pointer accent-blue-600 hover:accent-blue-500 transition-all"
+                className="w-full h-1 bg-slate-200 rounded-full appearance-none cursor-pointer accent-blue-600 hover:accent-blue-500 transition-all"
               />
             </div>
           </div>
@@ -298,7 +298,7 @@ const Library: React.FC<LibraryProps> = ({ ads, onAdClick, favorites, onToggleFa
       {/* Paywall Banner for Non-Subscribers */}
       {!isSubscribed && (
         <div className="py-20 flex flex-col items-center justify-center text-center animate-in fade-in slide-in-from-bottom-10 duration-700">
-          <div className="relative p-10 bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-[32px] max-w-2xl w-full shadow-2xl overflow-hidden group">
+          <div className="relative p-10 bg-white border border-slate-100 rounded-[32px] max-w-2xl w-full shadow-2xl overflow-hidden group">
             {/* Glow effects */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 blur-[100px] rounded-full group-hover:bg-blue-600/20 transition-all duration-700" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-600/10 blur-[100px] rounded-full group-hover:bg-indigo-600/20 transition-all duration-700" />
@@ -309,15 +309,15 @@ const Library: React.FC<LibraryProps> = ({ ads, onAdClick, favorites, onToggleFa
               </div>
 
               <div>
-                <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Desbloqueie a Base Completa</h3>
-                <p className="text-slate-400 font-medium text-sm max-w-md mx-auto">
+                <h3 className="text-3xl font-black text-slate-900 italic uppercase tracking-tighter mb-2">Desbloqueie a Base Completa</h3>
+                <p className="text-slate-500 font-medium text-sm max-w-md mx-auto">
                   Você está visualizando apenas uma amostra. Assine o AdScale Pro para acessar milhares de anúncios, métricas de escala, funis completos e muito mais.
                 </p>
               </div>
 
               <button
                 onClick={() => onNavigate && onNavigate('pricing')}
-                className="bg-white text-slate-950 px-10 py-4 rounded-xl font-black text-sm uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-white/10 flex items-center gap-3"
+                className="bg-slate-900 text-white px-10 py-4 rounded-xl font-black text-sm uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-slate-900/10 flex items-center gap-3"
               >
                 Ver Planos e Desbloquear
                 <ChevronRight size={16} />
@@ -351,7 +351,7 @@ const Library: React.FC<LibraryProps> = ({ ads, onAdClick, favorites, onToggleFa
 
       {filteredAds.length === 0 && (
         <div className="py-48 text-center flex flex-col items-center justify-center">
-          <div className="w-24 h-24 bg-slate-950 rounded-[32px] flex items-center justify-center mb-10 border border-slate-800 text-slate-800 shadow-2xl opacity-20">
+          <div className="w-24 h-24 bg-slate-50 rounded-[32px] flex items-center justify-center mb-10 border border-slate-100 text-slate-300 shadow-sm opacity-50">
             <LucideLibrary size={40} />
           </div>
           <h3 className="text-2xl font-black uppercase italic text-slate-500 tracking-tighter">Nenhum sinal encontrado com esses filtros</h3>

@@ -20,6 +20,8 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onClose, onNextAd, onPrevAd, isSu
   const [isGenerating, setIsGenerating] = useState(false);
   const [historyData, setHistoryData] = useState<AdHistory[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+  const [strategicDecode, setStrategicDecode] = useState<any>(null);
+  const [isLoadingDecode, setIsLoadingDecode] = useState(false);
 
   const isVideo = ad.mediaUrl.toLowerCase().includes('.mp4') || ad.mediaUrl.toLowerCase().includes('video');
   const creativeMedia = ad.mediaUrl || ad.thumbnail || `https://ui-avatars.com/api/?name=AD&background=1e293b&color=3b82f6&size=1024&bold=true`;
@@ -28,6 +30,9 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onClose, onNextAd, onPrevAd, isSu
   useEffect(() => {
     if (isSubscribed && activeTab === 'history') {
       fetchHistory();
+    }
+    if (isSubscribed && activeTab === 'ai' && !strategicDecode) {
+      handleStrategicDecode();
     }
   }, [activeTab, ad.id]);
 
@@ -52,6 +57,18 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onClose, onNextAd, onPrevAd, isSu
       console.error("AI Error", e);
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleStrategicDecode = async () => {
+    try {
+      setIsLoadingDecode(true);
+      const res = await api.strategicDecode(ad.id);
+      setStrategicDecode(res);
+    } catch (e) {
+      console.error("Decode Error", e);
+    } finally {
+      setIsLoadingDecode(false);
     }
   };
 
@@ -80,15 +97,15 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onClose, onNextAd, onPrevAd, isSu
   const isLongCopy = copy.length > 300;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/98 backdrop-blur-xl animate-in fade-in duration-300">
-      <div className="relative bg-[#020617] w-full max-w-7xl max-h-[95vh] rounded-[40px] overflow-hidden border border-slate-800 shadow-[0_0_100px_rgba(37,99,235,0.15)] flex flex-col md:flex-row animate-in zoom-in-95 duration-300">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
+      <div className="relative bg-white w-full max-w-7xl max-h-[95vh] rounded-[40px] overflow-hidden border border-slate-200 shadow-2xl flex flex-col md:flex-row animate-in zoom-in-95 duration-300">
 
-        <button onClick={onClose} className="absolute top-8 right-8 z-50 p-2.5 bg-slate-900/80 text-slate-400 rounded-2xl hover:text-white transition-all border border-slate-800 hover:scale-110">
+        <button onClick={onClose} className="absolute top-8 right-8 z-50 p-2.5 bg-white text-slate-400 rounded-2xl hover:text-slate-900 transition-all border border-slate-100 shadow-sm hover:scale-110">
           <X size={22} />
         </button>
 
         {/* PAINEL ESQUERDO: MÍDIA / CREATIVE PREVIEW */}
-        <div className="md:w-[45%] bg-black flex flex-col relative group overflow-hidden border-r border-slate-800 min-h-[500px] justify-center">
+        <div className="md:w-[45%] bg-slate-50 flex flex-col relative group overflow-hidden border-r border-slate-100 min-h-[500px] justify-center">
           <div className="w-full h-full relative flex items-center justify-center">
             {isVideo ? (
               <video
@@ -108,8 +125,8 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onClose, onNextAd, onPrevAd, isSu
           </div>
 
           <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-6 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-            <button onClick={(e) => { e.stopPropagation(); onPrevAd?.(); }} className="p-4 bg-black/60 backdrop-blur-md rounded-full border border-white/10 text-white pointer-events-auto hover:bg-blue-600 transition-all"><ChevronLeft size={24} /></button>
-            <button onClick={(e) => { e.stopPropagation(); onNextAd?.(); }} className="p-4 bg-black/60 backdrop-blur-md rounded-full border border-white/10 text-white pointer-events-auto hover:bg-blue-600 transition-all"><ChevronRight size={24} /></button>
+            <button onClick={(e) => { e.stopPropagation(); onPrevAd?.(); }} className="p-4 bg-white/80 backdrop-blur-md rounded-full border border-slate-200 text-slate-400 pointer-events-auto hover:bg-blue-600 hover:text-white transition-all shadow-sm"><ChevronLeft size={24} /></button>
+            <button onClick={(e) => { e.stopPropagation(); onNextAd?.(); }} className="p-4 bg-white/80 backdrop-blur-md rounded-full border border-slate-200 text-slate-400 pointer-events-auto hover:bg-blue-600 hover:text-white transition-all shadow-sm"><ChevronRight size={24} /></button>
           </div>
 
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity z-20">
@@ -120,19 +137,19 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onClose, onNextAd, onPrevAd, isSu
         </div>
 
         {/* PAINEL DIREITO: DOSSIÊ TÉCNICO ESTRUTURADO */}
-        <div className="md:w-[55%] p-10 md:p-14 overflow-y-auto custom-scrollbar flex flex-col bg-[#020617] relative">
+        <div className="md:w-[55%] p-10 md:p-14 overflow-y-auto custom-scrollbar flex flex-col bg-white relative">
 
           {/* PAYWALL OVERLAY */}
           {!isSubscribed && (
-            <div className="absolute inset-0 z-50 backdrop-blur-md bg-[#020617]/40 flex flex-col items-center justify-center text-center p-8">
-              <div className="bg-[#020617]/90 border border-blue-500/30 p-10 rounded-[40px] shadow-2xl shadow-blue-900/20 max-w-md backdrop-blur-xl">
+            <div className="absolute inset-0 z-50 backdrop-blur-md bg-white/40 flex flex-col items-center justify-center text-center p-8">
+              <div className="bg-white border border-slate-200 p-10 rounded-[40px] shadow-2xl max-w-md">
                 <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white mx-auto mb-6 shadow-lg shadow-blue-600/40">
                   <Lock size={32} />
                 </div>
-                <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter mb-2">
+                <h3 className="text-2xl font-black text-slate-900 uppercase italic tracking-tighter mb-2">
                   Dossiê Confidencial
                 </h3>
-                <p className="text-slate-400 text-sm font-medium leading-relaxed mb-8">
+                <p className="text-slate-500 text-sm font-medium leading-relaxed mb-8">
                   Análise completa de funil, métricas de escala, copy e links de destino são exclusivos para membros PRO.
                 </p>
                 <button
@@ -150,13 +167,13 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onClose, onNextAd, onPrevAd, isSu
             <div className="flex flex-col gap-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-4xl font-black text-white tracking-[0.2em] uppercase leading-none italic">DOSSIÊ DO SINAL</h2>
+                  <h2 className="text-4xl font-black text-slate-900 tracking-[0.2em] uppercase leading-none italic">DOSSIÊ DO SINAL</h2>
                   <div className="w-20 h-1 bg-blue-600 mt-4" />
                 </div>
               </div>
 
               {/* TABS SELECTOR */}
-              <div className="flex items-center gap-2 bg-white/5 p-1 rounded-2xl border border-white/10 self-start">
+              <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-2xl border border-slate-100 self-start">
                 <button
                   onClick={() => setActiveTab('overview')}
                   className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'overview' ? 'bg-blue-600 text-white' : 'text-slate-500 hover:text-slate-300'}`}
@@ -171,7 +188,7 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onClose, onNextAd, onPrevAd, isSu
                 </button>
                 <button
                   onClick={() => setActiveTab('history')}
-                  className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'history' ? 'bg-blue-600 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+                  className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'history' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-900'}`}
                 >
                   <History size={14} /> Curva de Escala
                 </button>
@@ -223,79 +240,140 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onClose, onNextAd, onPrevAd, isSu
                   </div>
                 </div>
 
+                {/* ULTRA INTELLIGENCE WIDGETS */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-6 rounded-[32px] border border-slate-100 shadow-sm">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">Saturação Criativa</span>
+                      <span className="text-[11px] font-black text-slate-900">{ad.performance.saturationLevel || 0}%</span>
+                    </div>
+                    <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full transition-all duration-1000 ${(ad.performance.saturationLevel || 0) > 70 ? 'bg-rose-500' :
+                          (ad.performance.saturationLevel || 0) > 40 ? 'bg-amber-500' : 'bg-emerald-500'
+                          }`}
+                        style={{ width: `${ad.performance.saturationLevel || 0}%` }}
+                      />
+                    </div>
+                    <p className="text-[8px] text-slate-400 font-bold uppercase italic tracking-wider">
+                      {(ad.performance.saturationLevel || 0) > 70 ? 'Público saturado - Risco de Fadiga' :
+                        (ad.performance.saturationLevel || 0) > 40 ? 'Escala Saudável - Monitorar CTR' : 'Altamente Receptivo - Escala Livre'}
+                    </p>
+                  </div>
+
+                  <div className="space-y-3 border-l border-slate-200 pl-6">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">Momentum Score</span>
+                      <span className="text-[11px] font-black text-blue-600">{(ad.performance.momentumScore || 0).toFixed(1)}/10</span>
+                    </div>
+                    <div className="flex gap-1">
+                      {[...Array(10)].map((_, i) => (
+                        <div
+                          key={i}
+                          className={`h-2 flex-1 rounded-full ${i < (ad.performance.momentumScore || 0) ? 'bg-blue-600' : 'bg-slate-200'
+                            }`}
+                        />
+                      ))}
+                    </div>
+                    <p className="text-[8px] text-slate-400 font-bold uppercase italic tracking-wider">
+                      Velocidade de Escala: {
+                        (ad.performance.momentumScore || 0) > 8 ? 'EXPONENCIAL' :
+                          (ad.performance.momentumScore || 0) > 5 ? 'ACELERADO' : 'ESTÁVEL'
+                      }
+                    </p>
+                  </div>
+                </div>
+
                 {/* METADATA LIST */}
                 <div className="grid grid-cols-2 gap-8 pl-2">
                   <div className="flex items-center gap-5 group">
-                    <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-slate-500 group-hover:text-blue-500 transition-colors">
+                    <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-blue-500 transition-colors border border-slate-100">
                       <Target size={20} />
                     </div>
                     <div>
-                      <span className="block text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">NICHO</span>
-                      <span className="text-[13px] font-black text-white uppercase italic">{ad.niche}</span>
+                      <span className="block text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">NICHO</span>
+                      <span className="text-[13px] font-black text-slate-900 uppercase italic">{ad.niche}</span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-5 group">
-                    <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-slate-500 group-hover:text-blue-500 transition-colors">
+                    <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-blue-500 transition-colors border border-slate-100">
                       <Layers size={20} />
                     </div>
                     <div>
-                      <span className="block text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">FUNIL ESTRATÉGICO</span>
-                      <span className="text-[13px] font-black text-white uppercase italic">{ad.funnelType || 'Direct -> Checkout'}</span>
+                      <span className="block text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">FUNIL ESTRATÉGICO</span>
+                      <span className="text-[13px] font-black text-slate-900 uppercase italic">{ad.funnelType || 'Direct -> Checkout'}</span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-5 group">
-                    <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-slate-500 group-hover:text-blue-500 transition-colors">
+                    <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-blue-500 transition-colors border border-slate-100">
                       <BarChart3 size={20} />
                     </div>
                     <div>
-                      <span className="block text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">ANÚNCIOS EM ESCALA</span>
-                      <span className="text-[13px] font-black text-blue-500 uppercase italic">{ad.adCount} ATIVOS</span>
+                      <span className="block text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">ANÚNCIOS EM ESCALA</span>
+                      <span className="text-[13px] font-black text-blue-600 uppercase italic">{ad.adCount} ATIVOS</span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-5 group">
-                    <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-slate-500 group-hover:text-blue-500 transition-colors">
+                    <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-blue-500 transition-colors border border-slate-100">
                       <CircleDollarSign size={20} />
                     </div>
                     <div>
-                      <span className="block text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">TICKET DE OFERTA</span>
-                      <span className="text-[13px] font-black text-white uppercase italic">{ad.ticketPrice}</span>
+                      <span className="block text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">TICKET DE OFERTA</span>
+                      <span className="text-[13px] font-black text-slate-900 uppercase italic">{ad.ticketPrice}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* EXTERNAL INTELLIGENCE LINKS */}
-                <div className="space-y-6 pt-8 border-t border-white/5">
+                <div className="space-y-6 pt-8 border-t border-slate-100">
                   <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-3 text-slate-500">
+                    <div className="flex items-center gap-3 text-slate-400">
                       <Store size={14} />
                       <span className="text-[9px] font-black uppercase tracking-widest italic">PÁGINA DE VENDAS</span>
                     </div>
-                    <a href={ad.salesPageUrl} target="_blank" rel="noreferrer" className="text-[12px] font-bold text-blue-500 underline truncate hover:text-blue-400 italic transition-colors">
+                    <a href={ad.salesPageUrl} target="_blank" rel="noreferrer" className="text-[12px] font-bold text-blue-600 underline truncate hover:text-blue-500 italic transition-colors">
                       {formatUrlDisplay(ad.salesPageUrl)}
                     </a>
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-3 text-slate-500">
+                    <div className="flex items-center gap-3 text-slate-400">
                       <ShoppingBag size={14} />
                       <span className="text-[9px] font-black uppercase tracking-widest italic">CHECKOUT DESTINO</span>
                     </div>
-                    <a href={ad.checkoutUrl} target="_blank" rel="noreferrer" className="text-[12px] font-bold text-blue-500 underline truncate hover:text-blue-400 italic transition-colors">
+                    <a href={ad.checkoutUrl} target="_blank" rel="noreferrer" className="text-[12px] font-bold text-blue-600 underline truncate hover:text-blue-500 italic transition-colors">
                       {formatUrlDisplay(ad.checkoutUrl)}
                     </a>
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-3 text-slate-500">
+                    <div className="flex items-center gap-3 text-slate-400">
                       <Facebook size={14} />
                       <span className="text-[9px] font-black uppercase tracking-widest italic">BIBLIOTECA DE ATIVOS</span>
                     </div>
-                    <a href={ad.libraryUrl} target="_blank" rel="noreferrer" className="text-[12px] font-bold text-blue-500 underline truncate hover:text-blue-400 italic transition-colors">
+                    <a href={ad.libraryUrl} target="_blank" rel="noreferrer" className="text-[12px] font-bold text-blue-600 underline truncate hover:text-blue-500 italic transition-colors">
                       {formatUrlDisplay(ad.libraryUrl)}
                     </a>
+                  </div>
+
+                  {/* Creative DNA - Similar Ads discovery */}
+                  <div className="pt-8 border-t border-slate-100 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Layers className="text-slate-400" size={18} />
+                      <div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Creative DNA</p>
+                        <p className="text-[12px] font-black text-slate-900 uppercase italic">Media Hash: {ad.mediaHash}</p>
+                      </div>
+                    </div>
+                    <button
+                      className="px-4 py-2 bg-slate-50 text-slate-400 border border-slate-200 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all shadow-sm"
+                      onClick={() => { /* Potential future filter logic */ }}
+                    >
+                      Descobrir Similares
+                    </button>
                   </div>
                 </div>
               </div>
@@ -303,11 +381,11 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onClose, onNextAd, onPrevAd, isSu
 
             {activeTab === 'ai' && (
               <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="bg-gradient-to-br from-blue-600/20 to-indigo-600/10 border border-blue-500/30 p-8 rounded-[40px]">
+                <div className="bg-slate-50 border border-slate-200 p-8 rounded-[40px] shadow-sm">
                   <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center gap-3">
-                      <Sparkles className="text-blue-400" size={24} />
-                      <h3 className="text-[18px] font-black text-white uppercase italic tracking-tighter">AI Ad Copy Assistant</h3>
+                      <Sparkles className="text-blue-600" size={24} />
+                      <h3 className="text-[18px] font-black text-slate-900 uppercase italic tracking-tighter">AI Ad Copy Assistant</h3>
                     </div>
                     <button
                       onClick={handleGenerateCopy}
@@ -319,9 +397,36 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onClose, onNextAd, onPrevAd, isSu
                     </button>
                   </div>
 
+                  {/* Strategic Decode Widget */}
+                  {isLoadingDecode ? (
+                    <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4 animate-pulse">
+                      {[1, 2, 3].map(i => <div key={i} className="h-20 bg-white rounded-3xl border border-slate-100" />)}
+                    </div>
+                  ) : strategicDecode && (
+                    <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4 animate-in fade-in zoom-in-95 duration-500">
+                      <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm transition-all hover:scale-[1.02]">
+                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2">Ângulo do Gancho</span>
+                        <p className="text-[12px] font-black text-slate-900 uppercase italic leading-tight">{strategicDecode.hook}</p>
+                      </div>
+                      <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm transition-all hover:scale-[1.02]">
+                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2">Dor Central Alvo</span>
+                        <p className="text-[12px] font-black text-slate-900 uppercase italic leading-tight">{strategicDecode.pain_point}</p>
+                      </div>
+                      <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm transition-all hover:scale-[1.02]">
+                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Sofisticação</span>
+                        <div className="flex gap-1 h-1.5 mt-2">
+                          {[1, 2, 3, 4, 5].map(lv => (
+                            <div key={lv} className={`flex-1 rounded-full ${lv <= strategicDecode.market_sophistication ? 'bg-blue-600' : 'bg-slate-100'}`} />
+                          ))}
+                        </div>
+                        <span className="text-[9px] font-bold text-slate-400 uppercase mt-2 block tracking-tighter">Nível {strategicDecode.market_sophistication} de 5</span>
+                      </div>
+                    </div>
+                  )}
+
                   {aiVariations.length === 0 && !isGenerating ? (
-                    <div className="text-center py-20 border-2 border-dashed border-white/5 rounded-[32px]">
-                      <BrainCircuit size={40} className="mx-auto text-slate-700 mb-4" />
+                    <div className="text-center py-20 border-2 border-dashed border-slate-200 rounded-[32px] bg-white">
+                      <BrainCircuit size={40} className="mx-auto text-slate-300 mb-4" />
                       <p className="text-slate-500 text-[11px] font-black uppercase tracking-widest italic">
                         Clique no botão acima para interceptar e recriar o copy usando IA.
                       </p>
@@ -330,17 +435,17 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onClose, onNextAd, onPrevAd, isSu
                     <div className="space-y-6">
                       {isGenerating && (
                         <div className="flex flex-col gap-4 animate-pulse">
-                          {[1, 2].map(i => <div key={i} className="h-40 bg-white/5 rounded-3xl" />)}
+                          {[1, 2].map(i => <div key={i} className="h-40 bg-white rounded-3xl border border-slate-100" />)}
                         </div>
                       )}
                       {!isGenerating && aiVariations.map((v, i) => (
-                        <div key={i} className="bg-[#020617] p-6 rounded-3xl border border-white/5 group relative transition-all hover:border-blue-500/40">
-                          <p className="text-slate-300 text-sm italic leading-relaxed whitespace-pre-wrap">
+                        <div key={i} className="bg-white p-6 rounded-3xl border border-slate-100 group relative transition-all hover:border-blue-500/40 shadow-sm">
+                          <p className="text-slate-600 text-sm italic leading-relaxed whitespace-pre-wrap">
                             {v.text}
                           </p>
                           <button
                             onClick={() => { navigator.clipboard.writeText(v.text); }}
-                            className="absolute top-4 right-4 p-2 bg-white/5 text-slate-500 rounded-lg hover:bg-blue-600 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                            className="absolute top-4 right-4 p-2 bg-slate-50 text-slate-400 rounded-lg hover:bg-blue-600 hover:text-white transition-all opacity-0 group-hover:opacity-100"
                           >
                             <Download size={14} />
                           </button>
@@ -354,10 +459,10 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onClose, onNextAd, onPrevAd, isSu
 
             {activeTab === 'history' && (
               <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="bg-[#020617] p-8 rounded-[40px] border border-white/5">
+                <div className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm">
                   <div className="flex items-center gap-3 mb-10">
-                    <TrendingUp className="text-blue-500" size={24} />
-                    <h3 className="text-[18px] font-black text-white uppercase italic tracking-tighter">Histórico de Escala (Sinais Ativos)</h3>
+                    <TrendingUp className="text-blue-600" size={24} />
+                    <h3 className="text-[18px] font-black text-slate-900 uppercase italic tracking-tighter">Histórico de Escala (Sinais Ativos)</h3>
                   </div>
 
                   <div className="h-[300px] w-full">
@@ -377,13 +482,13 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onClose, onNextAd, onPrevAd, isSu
                         <CartesianGrid strokeDasharray="3 3" stroke="#ffffff0a" vertical={false} />
                         <XAxis
                           dataKey="timestamp"
-                          stroke="#475569"
+                          stroke="#94a3b8"
                           fontSize={9}
                           tickFormatter={(str) => str.includes('T') ? str.split('T')[0] : str}
                         />
-                        <YAxis stroke="#475569" fontSize={9} />
+                        <YAxis stroke="#94a3b8" fontSize={9} />
                         <Tooltip
-                          contentStyle={{ background: '#020617', border: '1px solid #1e293b', borderRadius: '12px' }}
+                          contentStyle={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
                           labelStyle={{ color: '#64748b', fontSize: '10px', marginBottom: '4px' }}
                         />
                         <Area type="monotone" dataKey="adCount" stroke="#2563eb" strokeWidth={4} fillOpacity={1} fill="url(#colorCount)" />
@@ -391,8 +496,8 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onClose, onNextAd, onPrevAd, isSu
                     </ResponsiveContainer>
                   </div>
 
-                  <div className="mt-8 p-6 bg-blue-600/5 rounded-2xl border border-blue-500/20">
-                    <p className="text-[11px] text-blue-500 font-black uppercase italic leading-relaxed">
+                  <div className="mt-8 p-6 bg-blue-600/5 rounded-2xl border border-blue-500/10">
+                    <p className="text-[11px] text-blue-600 font-black uppercase italic leading-relaxed">
                       Insight do Especialista: O padrão de crescimento indica uma fase de {ad.adCount > 30 ? 'ESCALA VERTICAL' : 'VALIDAÇÃO DE CRIATIVO'}. A probabilidade de sucesso para novos testes é de 85% baseada em volume de sinal.
                     </p>
                   </div>

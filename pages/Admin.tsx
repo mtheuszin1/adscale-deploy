@@ -264,15 +264,15 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
       )}
 
       {/* Main Admin Header */}
-      <header className="bg-white/80 dark:bg-[#010411]/60 backdrop-blur-xl p-8 rounded-[40px] border border-slate-200 dark:border-white/5 shadow-2xl flex flex-col md:flex-row justify-between items-center gap-6">
+      <header className="bg-white/80 backdrop-blur-xl p-8 rounded-[40px] border border-slate-200 shadow-2xl flex flex-col md:flex-row justify-between items-center gap-6">
         <div className="flex flex-col">
-          <h1 className="text-5xl font-black italic uppercase tracking-tighter text-slate-900 dark:text-white flex items-center gap-4">
+          <h1 className="text-5xl font-black italic uppercase tracking-tighter text-slate-900 flex items-center gap-4">
             ADMIN <span className="text-blue-500">HUB</span>
           </h1>
           <p className="text-slate-500 font-mono text-[10px] tracking-[0.4em] uppercase italic mt-1">Gestão de Inteligência v4.8</p>
         </div>
 
-        <nav className="flex gap-1 bg-slate-100 dark:bg-black/60 p-1.5 rounded-[24px] border border-slate-200 dark:border-white/5">
+        <nav className="flex gap-1 bg-slate-100 p-1.5 rounded-[24px] border border-slate-200">
           {[
             { id: 'data', label: 'Curadoria', icon: <Star size={14} /> },
             { id: 'media', label: 'Media Vault', icon: <HardDrive size={14} /> },
@@ -282,7 +282,7 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest italic transition-all flex items-center gap-2 ${activeTab === tab.id ? 'bg-white dark:bg-white/5 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}
+              className={`px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest italic transition-all flex items-center gap-2 ${activeTab === tab.id ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}
             >
               {tab.icon} {tab.label}
             </button>
@@ -295,7 +295,7 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
         <div className="space-y-12 animate-in fade-in duration-500">
 
           {/* Sub-Navigation Visual System */}
-          <div className="flex flex-col lg:flex-row justify-between items-center gap-8 bg-slate-100 dark:bg-black/40 p-4 rounded-[32px] border border-slate-200 dark:border-white/5">
+          <div className="flex flex-col lg:flex-row justify-between items-center gap-8 bg-slate-100 p-4 rounded-[32px] border border-slate-200">
             <div className="flex gap-2 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0 custom-scrollbar">
               {[
                 { id: 'featured', label: 'Home Frontline', icon: <LayoutList size={18} />, desc: 'Gestão da vitrine principal' },
@@ -307,7 +307,7 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
                   onClick={() => setActiveDataView(v.id as any)}
                   className={`relative group px-6 py-4 rounded-2xl flex items-center gap-4 transition-all shrink-0 ${activeDataView === v.id
                     ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/20'
-                    : 'text-slate-500 hover:text-white hover:bg-white/5'
+                    : 'text-slate-400 hover:text-slate-700 hover:bg-slate-200/50'
                     }`}
                 >
                   <div className={`${activeDataView === v.id ? 'text-white' : 'text-slate-700 group-hover:text-blue-500'} transition-colors`}>
@@ -339,7 +339,7 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
                 className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest italic flex items-center gap-2 shadow-xl shadow-indigo-600/30 transition-all active:scale-95 whitespace-nowrap disabled:opacity-50"
               >
                 {isProcessing === 'region' ? <Loader2 className="animate-spin" size={14} /> : <BrainCircuit size={14} />}
-                Reprocessar Regiões (IA)
+                Atualizar Ultra Inteligência (IA)
               </button>
               <button
                 onClick={() => setShowCSVWizard(true)}
@@ -352,12 +352,12 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
 
           {/* VIEW: FRONTLINE HOME (Featured Management Enhanced) */}
           {activeDataView === 'featured' && (
-            <div className="bg-white/40 dark:bg-[#010411]/40 border border-slate-200 dark:border-slate-900 rounded-[48px] p-10 backdrop-blur-md animate-in slide-in-from-right-8 duration-500">
+            <div className="bg-white border border-slate-200 rounded-[48px] p-10 shadow-sm animate-in slide-in-from-right-8 duration-500">
 
               {/* Header de Seção com Bulk Actions */}
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
                 <div>
-                  <h3 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white flex items-center gap-3">
+                  <h3 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900 flex items-center gap-3">
                     <LayoutList className="text-blue-500" /> Home Frontline
                   </h3>
                   <p className="text-[11px] font-black text-slate-500 uppercase italic tracking-widest mt-1">Gerencie quais sinais aparecem em destaque na página inicial.</p>
@@ -373,23 +373,23 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
                       <button onClick={() => setSelectedIds(new Set())} className="p-2.5 text-white/60 hover:text-white"><X size={16} /></button>
                     </div>
                   )}
-                  <div className="px-5 py-2.5 bg-blue-500/10 text-blue-500 rounded-xl text-[10px] font-black uppercase italic border border-blue-500/20">
+                  <div className="px-5 py-2.5 bg-slate-100 text-slate-500 rounded-xl text-[10px] font-black uppercase italic border border-slate-200">
                     {actualFeaturedAdsCount} Sinais Ativos
                   </div>
-                  <div className="px-5 py-2.5 bg-slate-900 text-slate-500 rounded-xl text-[10px] font-black uppercase italic">
+                  <div className="px-5 py-2.5 bg-slate-50 text-slate-400 rounded-xl text-[10px] font-black uppercase italic border border-slate-200">
                     Capacidade Max: 12
                   </div>
                 </div>
               </div>
 
               {/* BARRA DE FILTROS AVANÇADOS */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-8 bg-black/20 p-6 rounded-[32px] border border-white/5">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-8 bg-slate-50 p-6 rounded-[32px] border border-slate-200">
                 <div className="lg:col-span-2 relative">
-                  <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+                  <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
                     type="text"
                     placeholder="Buscar sinal, marca ou ID..."
-                    className="w-full bg-slate-950/50 border border-slate-800 rounded-xl pl-10 pr-4 py-4 text-[10px] font-black uppercase italic text-white outline-none focus:border-blue-500 transition-all"
+                    className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-4 text-[10px] font-black uppercase italic text-slate-900 outline-none focus:border-blue-500 transition-all"
                     value={searchFilter}
                     onChange={(e) => setSearchFilter(e.target.value)}
                   />
@@ -397,7 +397,7 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
                 <select
                   value={platformFilter}
                   onChange={(e) => setPlatformFilter(e.target.value)}
-                  className="bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-4 text-[10px] font-black uppercase italic text-slate-400 outline-none focus:border-blue-500 cursor-pointer"
+                  className="bg-white border border-slate-200 rounded-xl px-4 py-4 text-[10px] font-black uppercase italic text-slate-500 outline-none focus:border-blue-500 cursor-pointer"
                 >
                   <option value="all">Plataforma: Todas</option>
                   {Object.values(Platform).map(p => <option key={p} value={p}>{p}</option>)}
@@ -405,7 +405,7 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-4 text-[10px] font-black uppercase italic text-slate-400 outline-none focus:border-blue-500 cursor-pointer"
+                  className="bg-white border border-slate-200 rounded-xl px-4 py-4 text-[10px] font-black uppercase italic text-slate-500 outline-none focus:border-blue-500 cursor-pointer"
                 >
                   <option value="all">Status: Todos</option>
                   {Object.values(AdStatus).map(s => <option key={s} value={s}>{s}</option>)}
@@ -413,7 +413,7 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
                 <select
                   value={nicheFilter}
                   onChange={(e) => setNicheFilter(e.target.value)}
-                  className="bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-4 text-[10px] font-black uppercase italic text-slate-400 outline-none focus:border-blue-500 cursor-pointer"
+                  className="bg-white border border-slate-200 rounded-xl px-4 py-4 text-[10px] font-black uppercase italic text-slate-500 outline-none focus:border-blue-500 cursor-pointer"
                 >
                   <option value="all">Nicho: Todos</option>
                   {Object.values(Niche).map(n => <option key={n} value={n}>{n}</option>)}
@@ -421,30 +421,30 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
                 <select
                   value={regionFilter}
                   onChange={(e) => setRegionFilter(e.target.value)}
-                  className="bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-4 text-[10px] font-black uppercase italic text-slate-400 outline-none focus:border-blue-500 cursor-pointer"
+                  className="bg-white border border-slate-200 rounded-xl px-4 py-4 text-[10px] font-black uppercase italic text-slate-500 outline-none focus:border-blue-500 cursor-pointer"
                 >
                   <option value="all">País: Todos</option>
                   {availableCountries.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
                 <button
                   onClick={resetFilters}
-                  className="flex items-center justify-center gap-2 text-[10px] font-black uppercase italic text-slate-500 hover:text-white transition-all border border-slate-800 rounded-xl hover:bg-white/5"
+                  className="flex items-center justify-center gap-2 text-[10px] font-black uppercase italic text-slate-400 hover:text-slate-900 transition-all border border-slate-200 rounded-xl hover:bg-slate-100"
                 >
                   <RefreshCw size={14} /> Resetar Filtros
                 </button>
               </div>
 
               {/* TABELA DE GESTÃO */}
-              <div className="overflow-x-auto bg-white/5 dark:bg-black/20 rounded-[32px] border border-slate-200 dark:border-white/5">
+              <div className="overflow-x-auto bg-slate-50 rounded-[32px] border border-slate-200">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="border-b border-slate-200 dark:border-white/5 bg-white/5">
+                    <tr className="border-b border-slate-200 bg-slate-100">
                       <th className="p-6 w-10">
-                        <button onClick={() => toggleSelectAll(managedFrontlineAds)} className="text-slate-500 hover:text-white transition-colors">
+                        <button onClick={() => toggleSelectAll(managedFrontlineAds)} className="text-slate-400 hover:text-slate-900 transition-colors">
                           {selectedIds.size === managedFrontlineAds.length && managedFrontlineAds.length > 0 ? <CheckSquare size={18} /> : <Square size={18} />}
                         </button>
                       </th>
-                      <th onClick={() => toggleSort('displayOrder')} className="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest cursor-pointer hover:text-white transition-colors">
+                      <th onClick={() => toggleSort('displayOrder')} className="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest cursor-pointer hover:text-slate-900 transition-colors">
                         <div className="flex items-center gap-2">
                           Display Order {sortConfig.key === 'displayOrder' && (sortConfig.direction === 'asc' ? <ArrowUp size={10} /> : <ArrowDown size={10} />)}
                         </div>
@@ -467,9 +467,9 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
                       <th className="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Ações de Controle</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+                  <tbody className="divide-y divide-slate-100">
                     {managedFrontlineAds.map((ad, idx) => (
-                      <tr key={ad.id} className={`group hover:bg-slate-50 dark:hover:bg-white/5 transition-all ${selectedIds.has(ad.id) ? 'bg-blue-600/5' : ''}`}>
+                      <tr key={ad.id} className={`group hover:bg-slate-100 transition-all ${selectedIds.has(ad.id) ? 'bg-blue-600/5' : ''}`}>
                         <td className="p-6">
                           <button onClick={() => toggleSelection(ad.id)} className={`${selectedIds.has(ad.id) ? 'text-blue-500' : 'text-slate-700 hover:text-slate-500'} transition-colors`}>
                             {selectedIds.has(ad.id) ? <CheckSquare size={18} /> : <Square size={18} />}
@@ -477,10 +477,10 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
                         </td>
                         <td className="p-6">
                           <div className="flex items-center gap-4">
-                            <span className="text-[10px] font-mono text-slate-600">#{idx + 1}</span>
+                            <span className="text-[10px] font-mono text-slate-500">#{idx + 1}</span>
                             <input
                               type="number"
-                              className="w-14 bg-white dark:bg-black border border-slate-200 dark:border-slate-800 rounded-xl p-2 text-[10px] font-black text-center text-blue-500 focus:border-blue-500 outline-none"
+                              className="w-14 bg-white border border-slate-200 rounded-xl p-2 text-[10px] font-black text-center text-blue-500 focus:border-blue-500 outline-none"
                               value={ad.displayOrder || 0}
                               onChange={(e) => updateDisplayOrder(ad, parseInt(e.target.value))}
                             />
@@ -488,14 +488,14 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
                         </td>
                         <td className="p-6">
                           <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-slate-200 dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-300 dark:border-white/10 group-hover:scale-105 transition-transform relative">
+                            <div className="w-12 h-12 bg-slate-100 rounded-xl overflow-hidden border border-slate-200 group-hover:scale-105 transition-transform relative">
                               <img src={ad.brandLogo} className="w-full h-full object-cover" alt="" />
                               {ad.isFeatured && <div className="absolute top-0 right-0 bg-blue-600 p-0.5 rounded-bl-lg shadow-md"><Star size={10} className="text-white" fill="currentColor" /></div>}
                             </div>
                             <div>
                               <div className="flex items-center gap-2 mb-1">
                                 {ad.targeting?.locations?.[0]?.flag && <span className="text-sm scale-125 mr-1" title={ad.targeting.locations[0].country}>{ad.targeting.locations[0].flag}</span>}
-                                <span className="block text-[12px] font-black uppercase italic text-slate-900 dark:text-white leading-none">{ad.title}</span>
+                                <span className="block text-[12px] font-black uppercase italic text-slate-900 leading-none">{ad.title}</span>
                                 {getIntelBadge(ad.rating)}
                               </div>
                               <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{ad.niche} • {ad.platform}</span>
@@ -519,12 +519,12 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
                           <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button
                               onClick={() => toggleFeatured(ad)}
-                              className={`p-3 rounded-xl border transition-all ${ad.isFeatured ? 'bg-blue-600 text-white border-blue-500' : 'bg-white dark:bg-slate-900 text-slate-400 border-slate-200 dark:border-slate-800'}`}
+                              className={`p-3 rounded-xl border transition-all ${ad.isFeatured ? 'bg-blue-600 text-white border-blue-500' : 'bg-white text-slate-400 border-slate-200'}`}
                               title={ad.isFeatured ? "Remover do Destaque" : "Fixar no Destaque"}
                             >
                               {ad.isFeatured ? <PinOff size={16} /> : <Pin size={16} />}
                             </button>
-                            <button onClick={() => setEditingAd(ad)} className="p-3 bg-white dark:bg-slate-900 text-slate-400 hover:text-white rounded-xl border border-slate-200 dark:border-slate-800 transition-all">
+                            <button onClick={() => setEditingAd(ad)} className="p-3 bg-white text-slate-400 hover:text-slate-900 rounded-xl border border-slate-200 transition-all">
                               <Edit3 size={16} />
                             </button>
                             <button onClick={() => onDeleteAd(ad.id)} className="p-3 bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white rounded-xl transition-all">
@@ -552,10 +552,10 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
 
           {/* VIEW: TOP 20 RANKING */}
           {activeDataView === 'ranking' && (
-            <div className="bg-white/40 dark:bg-[#010411]/40 border border-slate-200 dark:border-slate-900 rounded-[48px] p-10 backdrop-blur-md animate-in slide-in-from-right-8 duration-500">
+            <div className="bg-white border border-slate-200 rounded-[48px] p-10 shadow-sm animate-in slide-in-from-right-8 duration-500">
               <div className="flex items-center justify-between mb-10">
                 <div>
-                  <h3 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white flex items-center gap-3">
+                  <h3 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900 flex items-center gap-3">
                     <Trophy className="text-amber-500" /> Top 20 Intelligence
                   </h3>
                   <p className="text-[11px] font-black text-slate-500 uppercase italic tracking-widest mt-1">Os maiores sinais da rede classificados por volume de ativos e autoridade.</p>
@@ -564,16 +564,16 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
 
               <div className="grid grid-cols-1 gap-4">
                 {topAds.map((ad, idx) => (
-                  <div key={ad.id} className="bg-white dark:bg-[#0f172a]/40 border border-slate-200 dark:border-white/5 p-6 rounded-[32px] flex flex-col md:flex-row items-center justify-between gap-6 group hover:border-blue-500/40 transition-all">
+                  <div key={ad.id} className="bg-slate-50 border border-slate-200 p-6 rounded-[32px] flex flex-col md:flex-row items-center justify-between gap-6 group hover:border-blue-500/40 transition-all">
                     <div className="flex items-center gap-8 flex-1">
-                      <span className={`text-4xl font-black italic italic tracking-tighter ${idx < 3 ? 'text-blue-500' : 'text-slate-800'}`}>
+                      <span className={`text-4xl font-black italic italic tracking-tighter ${idx < 3 ? 'text-blue-500' : 'text-slate-300'}`}>
                         {(idx + 1).toString().padStart(2, '0')}
                       </span>
-                      <div className="w-16 h-16 bg-slate-200 dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-300 dark:border-white/10 group-hover:scale-105 transition-transform">
+                      <div className="w-16 h-16 bg-white rounded-2xl overflow-hidden border border-slate-200 group-hover:scale-105 transition-transform">
                         <img src={ad.brandLogo} className="w-full h-full object-cover" alt="" />
                       </div>
                       <div>
-                        <h4 className="text-xl font-black uppercase italic text-slate-900 dark:text-white leading-none mb-1">{ad.title}</h4>
+                        <h4 className="text-xl font-black uppercase italic text-slate-900 leading-none mb-1">{ad.title}</h4>
                         <div className="flex items-center gap-3">
                           <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{ad.niche}</span>
                           <span className="w-1 h-1 bg-slate-700 rounded-full" />
@@ -599,13 +599,13 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
                           onClick={() => toggleFeatured(ad)}
                           className={`p-4 rounded-2xl transition-all ${ad.isFeatured
                             ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/30'
-                            : 'bg-slate-100 dark:bg-slate-900 text-slate-500 hover:text-white'
+                            : 'bg-white text-slate-400 hover:text-slate-900 border border-slate-200'
                             }`}
                           title={ad.isFeatured ? "Remover da Home" : "Adicionar à Home"}
                         >
                           {ad.isFeatured ? <Eye size={20} /> : <EyeOff size={20} />}
                         </button>
-                        <button onClick={() => setEditingAd(ad)} className="p-4 bg-slate-100 dark:bg-slate-900 text-slate-500 hover:text-white rounded-2xl border border-transparent dark:hover:border-white/10 transition-all">
+                        <button onClick={() => setEditingAd(ad)} className="p-4 bg-white text-slate-400 hover:text-slate-900 rounded-2xl border border-slate-200 transition-all">
                           <Settings2 size={20} />
                         </button>
                       </div>
@@ -621,8 +621,8 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 animate-in slide-in-from-right-8 duration-500">
               {/* Categories Grid - Mobile/Tablet list, Desktop sidebar */}
               <div className="lg:col-span-1 space-y-6">
-                <div className="bg-white/40 dark:bg-[#010411]/40 border border-slate-200 dark:border-slate-900 rounded-[32px] p-8 backdrop-blur-md">
-                  <h4 className="text-[12px] font-black uppercase italic text-slate-900 dark:text-white mb-8 flex items-center gap-3">
+                <div className="bg-white border border-slate-200 rounded-[32px] p-8 shadow-sm">
+                  <h4 className="text-[12px] font-black uppercase italic text-slate-900 mb-8 flex items-center gap-3">
                     <ListFilter size={16} /> Segmentação Inteligente
                   </h4>
                   <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
@@ -630,7 +630,7 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
                       onClick={() => setSelectedNiche('all')}
                       className={`w-full text-left px-5 py-4 rounded-xl text-[10px] font-black uppercase italic transition-all flex justify-between items-center ${selectedNiche === 'all'
                         ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/20'
-                        : 'text-slate-500 hover:bg-white/5'
+                        : 'text-slate-400 hover:bg-slate-50'
                         }`}
                     >
                       <span>TODOS OS SINAIS</span>
@@ -642,7 +642,7 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
                         onClick={() => setSelectedNiche(n)}
                         className={`w-full text-left px-5 py-4 rounded-xl text-[10px] font-black uppercase italic transition-all flex justify-between items-center ${selectedNiche === n
                           ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/20'
-                          : 'text-slate-500 hover:bg-white/5'
+                          : 'text-slate-400 hover:bg-slate-50'
                           }`}
                       >
                         <span className="truncate pr-2">{n}</span>
@@ -661,10 +661,10 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
               </div>
 
               {/* Results Container */}
-              <div className="lg:col-span-3 bg-white/40 dark:bg-[#010411]/40 border border-slate-200 dark:border-slate-900 rounded-[48px] p-10 backdrop-blur-md">
+              <div className="lg:col-span-3 bg-white border border-slate-200 rounded-[48px] p-10 shadow-sm">
                 <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-6">
                   <div>
-                    <h3 className="text-2xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">
+                    <h3 className="text-2xl font-black uppercase italic tracking-tighter text-slate-900">
                       Filtro: <span className="text-blue-500">{selectedNiche === 'all' ? 'Base de Dados' : selectedNiche}</span>
                     </h3>
                     <p className="text-[10px] font-black text-slate-500 uppercase italic tracking-widest">{filteredByTopic.length} Sinais Interceptados</p>
@@ -677,13 +677,13 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[700px] overflow-y-auto pr-4 custom-scrollbar">
                   {filteredByTopic.map(ad => (
-                    <div key={ad.id} className="bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5 rounded-3xl p-5 flex items-center justify-between group hover:border-blue-500/30 transition-all">
+                    <div key={ad.id} className="bg-slate-50 border border-slate-200 rounded-3xl p-5 flex items-center justify-between group hover:border-blue-500/30 transition-all">
                       <div className="flex items-center gap-4 flex-1 min-w-0">
-                        <div className="w-12 h-12 bg-slate-100 dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-200 dark:border-white/10">
+                        <div className="w-12 h-12 bg-white rounded-xl overflow-hidden border border-slate-200">
                           <img src={ad.brandLogo} className="w-full h-full object-cover" alt="" />
                         </div>
                         <div className="min-w-0">
-                          <h4 className="text-[11px] font-black text-slate-900 dark:text-white uppercase italic truncate pr-2 leading-none mb-1.5">{ad.title}</h4>
+                          <h4 className="text-[11px] font-black text-slate-900 uppercase italic truncate pr-2 leading-none mb-1.5">{ad.title}</h4>
                           <div className="flex items-center gap-3">
                             <span className="text-[9px] font-mono text-blue-500 leading-none">{ad.adCount} Ativos</span>
                             <div className="w-1 h-1 bg-slate-700 rounded-full" />
@@ -692,10 +692,10 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
                         </div>
                       </div>
                       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => setEditingAd(ad)} className="p-2.5 bg-slate-100 dark:bg-white/5 rounded-xl text-slate-500 hover:text-white transition-all"><Edit3 size={14} /></button>
+                        <button onClick={() => setEditingAd(ad)} className="p-2.5 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-slate-900 transition-all"><Edit3 size={14} /></button>
                         <button
                           onClick={() => toggleFeatured(ad)}
-                          className={`p-2.5 rounded-xl transition-all ${ad.isFeatured ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-white/5 text-slate-500 hover:text-white'}`}
+                          className={`p-2.5 rounded-xl transition-all ${ad.isFeatured ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-400 hover:text-slate-900'}`}
                         >
                           <Star size={14} fill={ad.isFeatured ? 'currentColor' : 'none'} />
                         </button>
@@ -735,7 +735,7 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
 
             <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {assets.filter(a => a.name.toLowerCase().includes(assetsSearch.toLowerCase())).map(asset => (
-                <div key={asset.id} className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-white/5 rounded-[32px] p-6 group">
+                <div key={asset.id} className="bg-white border border-slate-200 rounded-[32px] p-6 group shadow-sm">
                   <div className="aspect-video bg-black rounded-2xl overflow-hidden mb-4 relative">
                     {asset.type === 'video' ? <video src={asset.url} className="w-full h-full object-cover" /> : <img src={asset.url} className="w-full h-full object-cover" />}
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
@@ -743,7 +743,7 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
                       <button onClick={() => deleteAsset(asset.id)} className="p-3 bg-white text-rose-600 rounded-xl hover:bg-rose-600 hover:text-white transition-all"><Trash2 size={18} /></button>
                     </div>
                   </div>
-                  <h4 className="text-[10px] font-black text-slate-900 dark:text-white uppercase italic truncate">{asset.name}</h4>
+                  <h4 className="text-[10px] font-black text-slate-900 uppercase italic truncate">{asset.name}</h4>
                 </div>
               ))}
             </div>
@@ -752,9 +752,9 @@ const Admin: React.FC<AdminProps> = ({ ads, onAddAd, onDeleteAd, onBatchUpdateAd
       )}
 
       {activeTab === 'finance' && (
-        <div className="bg-white/40 dark:bg-[#010411]/40 border border-slate-200 dark:border-slate-900 rounded-[48px] p-20 text-center animate-in zoom-in-95 duration-500 backdrop-blur-xl">
+        <div className="bg-white border border-slate-200 rounded-[48px] p-20 text-center animate-in zoom-in-95 duration-500 shadow-sm">
           <DollarSign size={48} className="mx-auto text-emerald-500 mb-6" />
-          <h2 className="text-3xl font-black uppercase italic text-slate-900 dark:text-white">Painel de Faturamento</h2>
+          <h2 className="text-3xl font-black uppercase italic text-slate-900">Painel de Faturamento</h2>
           <p className="text-slate-500 mt-2 font-black uppercase text-[10px] tracking-widest italic">Gestão de MRR e assinaturas da rede.</p>
         </div>
       )}

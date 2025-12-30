@@ -15,7 +15,7 @@ import AdModal from './components/AdModal';
 import { Ad, User } from './types';
 import { dbService } from './services/dbService';
 import { authService } from './services/authService';
-import { Crown, Settings as SettingsIcon, LogOut, Moon, Sun } from 'lucide-react';
+import { Crown, Settings as SettingsIcon, LogOut, Moon, Sun, Zap } from 'lucide-react';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -173,12 +173,22 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] dark:bg-[#010411] text-slate-900 dark:text-slate-200 font-sans selection:bg-blue-600/30 selection:text-blue-200 transition-theme">
-      <header className="fixed top-0 left-0 right-0 h-20 bg-white/80 dark:bg-[#010411]/90 backdrop-blur-2xl z-50 border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-8 md:px-12 transition-theme">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans selection:bg-blue-600/30 selection:text-blue-200 transition-theme">
+      <header className="fixed top-0 left-0 right-0 h-20 bg-white/80 backdrop-blur-2xl z-50 border-b border-slate-200 flex items-center justify-between px-8 md:px-12 transition-theme">
         <div className="flex items-center gap-6 lg:gap-12">
-          <div className="flex items-center cursor-pointer" onClick={() => setCurrentPage(user ? 'dashboard' : 'library')}>
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-black text-white shadow-lg shadow-blue-600/20 italic text-base">AS</div>
-            <span className="ml-3 text-lg font-black tracking-tighter text-slate-900 dark:text-white uppercase italic hidden lg:block">ADSCALE</span>
+          <div className="flex items-center gap-3">
+            <div
+              onClick={() => setCurrentPage('dashboard')}
+              className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center cursor-pointer hover:rotate-6 transition-all shadow-xl shadow-blue-600/20"
+            >
+              <Zap size={24} className="text-white" fill="currentColor" />
+            </div>
+            <div
+              onClick={() => setCurrentPage('dashboard')}
+              className="flex flex-col cursor-pointer"
+            >
+              <span className="ml-3 text-lg font-black tracking-tighter text-slate-900 uppercase italic hidden lg:block">ADSCALE</span>
+            </div>
           </div>
 
           <div className="hidden md:block">
@@ -201,27 +211,27 @@ const App: React.FC = () => {
             </button>
           )}
 
-          <div className="h-8 w-px bg-slate-200 dark:bg-white/5 hidden sm:block" />
+          <div className="h-8 w-px bg-slate-200 hidden sm:block" />
 
           <div className="flex items-center gap-3">
             {user ? (
               <>
                 <div className="flex flex-col items-end hidden sm:block">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white leading-none mb-1">{user.name}</p>
-                  <p className="text-[8px] font-black uppercase text-slate-500 dark:text-slate-500 leading-none">{user.role}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 leading-none mb-1">{user.name}</p>
+                  <p className="text-[8px] font-black uppercase text-slate-500 leading-none">{user.role}</p>
                 </div>
 
                 <div className="relative group">
-                  <div className="w-10 h-10 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl flex items-center justify-center font-black text-xs italic text-blue-500 cursor-pointer hover:border-blue-500/50 transition-all">
+                  <div className="w-10 h-10 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center font-black text-xs italic text-blue-500 cursor-pointer hover:border-blue-500/50 transition-all">
                     {user.name.charAt(0)}
                   </div>
 
                   <div className="absolute right-0 top-full pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                    <div className="w-48 bg-white dark:bg-[#0B0F1A] border border-slate-200 dark:border-white/10 rounded-2xl p-2 shadow-2xl">
-                      <button onClick={() => setCurrentPage('settings')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all text-[10px] font-black uppercase tracking-widest italic">
+                    <div className="w-48 bg-white border border-slate-200 rounded-2xl p-2 shadow-2xl">
+                      <button onClick={() => setCurrentPage('settings')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all text-[10px] font-black uppercase tracking-widest italic">
                         <SettingsIcon size={14} /> Configurações
                       </button>
-                      <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/5 transition-all text-[10px] font-black uppercase tracking-widest italic">
+                      <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-rose-500 hover:bg-rose-50 transition-all text-[10px] font-black uppercase tracking-widest italic">
                         <LogOut size={14} /> Sair da Rede
                       </button>
                     </div>

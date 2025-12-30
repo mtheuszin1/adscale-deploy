@@ -49,7 +49,7 @@ const ScalingLive: React.FC<ScalingLiveProps> = ({ ads, onAdClick, favorites, on
   return (
     <div className="space-y-12 animate-in fade-in duration-700 max-w-[1700px] mx-auto pb-32">
       {/* Header and Filter Tabs Section */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 bg-slate-900/30 p-12 rounded-[56px] border border-white/5 backdrop-blur-3xl relative overflow-hidden">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 bg-slate-50 p-12 rounded-[56px] border border-slate-100 relative overflow-hidden shadow-sm">
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-emerald-500/5 blur-[120px] -z-10" />
 
         <div className="flex items-center gap-8">
@@ -57,7 +57,7 @@ const ScalingLive: React.FC<ScalingLiveProps> = ({ ads, onAdClick, favorites, on
             <TrendingUp size={40} />
           </div>
           <div>
-            <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-white leading-none mb-3">
+            <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-slate-900 leading-none mb-3">
               Escalando <span className="text-emerald-500">Live</span>
             </h1>
             <div className="flex items-center gap-3">
@@ -70,7 +70,7 @@ const ScalingLive: React.FC<ScalingLiveProps> = ({ ads, onAdClick, favorites, on
         </div>
 
         {/* Timeframe Selection - Design Ultra Clean sem subtextos */}
-        <div className="flex flex-wrap gap-4 bg-black/40 p-2.5 rounded-[32px] border border-white/5 shadow-inner backdrop-blur-lg">
+        <div className="flex flex-wrap gap-4 bg-white p-2.5 rounded-[32px] border border-slate-200 shadow-sm">
           {[
             { id: 'today', label: 'ESCALANDO HOJE', icon: <Zap size={16} /> },
             { id: 'week', label: 'TRAÇÃO NA SEMANA', icon: <Calendar size={16} /> },
@@ -81,7 +81,7 @@ const ScalingLive: React.FC<ScalingLiveProps> = ({ ads, onAdClick, favorites, on
               onClick={() => setTimeframe(tab.id as Timeframe)}
               className={`flex items-center justify-center gap-3 px-12 py-5 rounded-[24px] text-[11px] font-black uppercase tracking-widest transition-all italic active:scale-95 min-w-[220px] ${timeframe === tab.id
                 ? 'bg-[#10b981] text-white shadow-[0_15px_30px_-5px_rgba(16,185,129,0.4)] border border-emerald-400/30'
-                : 'text-slate-500 hover:text-slate-300 hover:bg-white/5 border border-transparent'
+                : 'text-slate-400 hover:text-slate-900 hover:bg-slate-50 border border-transparent'
                 }`}
             >
               {tab.icon} {tab.label}
@@ -106,10 +106,10 @@ const ScalingLive: React.FC<ScalingLiveProps> = ({ ads, onAdClick, favorites, on
             ))}
           </div>
         ) : (
-          <div className="py-48 text-center bg-slate-900/10 border border-white/5 rounded-[56px] flex flex-col items-center justify-center border-dashed">
-            <div className="w-24 h-24 bg-slate-950 rounded-[32px] flex items-center justify-center mb-10 border border-slate-800 text-slate-800 shadow-2xl relative">
-              <div className="absolute inset-0 bg-blue-500/10 blur-xl animate-pulse" />
-              <Target size={40} className="text-slate-700 relative z-10" />
+          <div className="py-48 text-center bg-slate-50 border border-slate-100 rounded-[56px] flex flex-col items-center justify-center border-dashed w-full shadow-sm">
+            <div className="w-24 h-24 bg-white rounded-[32px] flex items-center justify-center mb-10 border border-slate-100 text-slate-300 shadow-sm relative">
+              <div className="absolute inset-0 bg-blue-500/5 blur-xl animate-pulse" />
+              <Target size={40} className="text-slate-200 relative z-10" />
             </div>
             <h3 className="text-3xl font-black uppercase italic text-slate-500 mb-4 tracking-tighter">Filtro de Inteligência Ativo</h3>
             <p className="text-slate-600 font-bold text-xs uppercase tracking-widest italic">Não há criativos de nicho correspondente neste timeframe no momento.</p>

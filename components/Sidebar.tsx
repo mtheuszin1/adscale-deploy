@@ -31,30 +31,30 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onNavigate, currentPage, user
           key={item.id}
           onClick={() => onNavigate(item.id)}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all relative group h-10 ${currentPage === item.id
-            ? 'bg-blue-600/10 text-blue-600 dark:text-blue-500 font-black border border-blue-500/10'
-            : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
+            ? 'bg-blue-600/10 text-blue-600 font-black border border-blue-500/10'
+            : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
             }`}
         >
-          <div className={`${currentPage === item.id ? 'text-blue-600 dark:text-blue-500' : 'text-slate-400 dark:text-slate-600 group-hover:text-slate-900 dark:group-hover:text-white'}`}>
+          <div className={`${currentPage === item.id ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-900'}`}>
             {item.icon}
           </div>
           <span className="text-[10px] font-black uppercase tracking-widest italic hidden xl:block">{item.label}</span>
-          {currentPage === item.id && <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-600 dark:bg-blue-500 rounded-full" />}
+          {currentPage === item.id && <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-600 rounded-full" />}
         </button>
       ))}
 
-      <div className="w-px h-6 bg-slate-200 dark:bg-slate-800 mx-2" />
+      <div className="w-px h-6 bg-slate-200 mx-2" />
 
       {userRole === 'admin' && adminItems.map((item) => (
         <button
           key={item.id}
           onClick={() => onNavigate(item.id)}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all relative group h-10 ${currentPage === item.id
-            ? 'bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-white font-black border border-slate-200 dark:border-slate-800 shadow-sm'
-            : 'text-slate-400 dark:text-slate-600 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
+            ? 'bg-slate-100 text-slate-900 font-black border border-slate-200 shadow-sm'
+            : 'text-slate-400 hover:bg-slate-100 hover:text-slate-900'
             }`}
         >
-          <div className={`${currentPage === item.id ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-700 group-hover:text-slate-900 dark:group-hover:text-white'}`}>
+          <div className={`${currentPage === item.id ? 'text-slate-900' : 'text-slate-400 group-hover:text-slate-900'}`}>
             {item.icon}
           </div>
           <span className="text-[10px] font-black uppercase tracking-widest italic hidden xl:block">{item.label}</span>

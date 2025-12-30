@@ -32,11 +32,11 @@ const UsersPage: React.FC = () => {
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-10">
         <div>
-          <h1 className="text-5xl font-black tracking-tighter mb-3 uppercase italic">Operadores de Rede</h1>
+          <h1 className="text-5xl font-black tracking-tighter mb-3 uppercase italic text-slate-900">Operadores de Rede</h1>
           <p className="text-slate-500 font-medium text-lg">Controle de acesso, privilégios e status de assinatura.</p>
         </div>
         <div className="flex gap-4">
-          <button className="bg-slate-900 border border-slate-800 px-6 py-3 rounded-2xl flex items-center gap-3 hover:bg-slate-800 transition-all font-bold text-xs uppercase tracking-widest text-slate-400">
+          <button className="bg-slate-100 border border-slate-200 px-6 py-3 rounded-2xl flex items-center gap-3 hover:bg-slate-200 transition-all font-bold text-xs uppercase tracking-widest text-slate-500">
             <Filter size={18} /> Filtrar Agentes
           </button>
           <button className="bg-blue-600 text-white px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-500 shadow-xl shadow-blue-600/20 transition-all italic">
@@ -50,13 +50,13 @@ const UsersPage: React.FC = () => {
         <input
           type="text"
           placeholder="Localizar operador por codinome ou canal seguro..."
-          className="w-full bg-slate-900/60 border border-slate-800 rounded-3xl py-5 pl-16 pr-6 focus:border-blue-500 outline-none transition-all placeholder:text-slate-700 font-bold text-sm text-white"
+          className="w-full bg-white border border-slate-200 rounded-3xl py-5 pl-16 pr-6 focus:border-blue-500 outline-none transition-all placeholder:text-slate-300 font-bold text-sm text-slate-900 shadow-sm"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
 
-      <div className="bg-slate-900/40 border border-slate-800 rounded-[48px] overflow-hidden backdrop-blur-md shadow-2xl min-h-[400px]">
+      <div className="bg-white border border-slate-200 rounded-[48px] overflow-hidden shadow-sm min-h-[400px]">
         {loading ? (
           <div className="flex flex-col items-center justify-center p-20 gap-4">
             <Loader2 className="text-blue-500 animate-spin" size={48} />
@@ -68,7 +68,7 @@ const UsersPage: React.FC = () => {
           </div>
         ) : (
           <table className="w-full text-left">
-            <thead className="bg-black/40 border-b border-slate-800">
+            <thead className="bg-slate-100 border-b border-slate-200">
               <tr>
                 <th className="px-10 py-6 text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">Operador</th>
                 <th className="px-10 py-6 text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">Status Vital</th>
@@ -77,16 +77,16 @@ const UsersPage: React.FC = () => {
                 <th className="px-10 py-6 text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] text-right">Controles</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800">
+            <tbody className="divide-y divide-slate-100">
               {filteredUsers.map(u => (
-                <tr key={u.id} className="hover:bg-blue-600/[0.02] transition-all group">
+                <tr key={u.id} className="hover:bg-blue-500/[0.02] transition-all group">
                   <td className="px-10 py-6">
                     <div className="flex items-center gap-5">
-                      <div className="w-12 h-12 bg-slate-950 border border-slate-800 rounded-2xl flex items-center justify-center font-black text-slate-600 group-hover:border-blue-500/50 group-hover:text-blue-500 transition-all text-lg italic uppercase">
+                      <div className="w-12 h-12 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-center font-black text-slate-400 group-hover:border-blue-500/50 group-hover:text-blue-500 transition-all text-lg italic uppercase">
                         {u.name.charAt(0)}
                       </div>
                       <div>
-                        <div className="text-sm font-black text-white flex items-center gap-2 uppercase italic tracking-tight">
+                        <div className="text-sm font-black text-slate-900 flex items-center gap-2 uppercase italic tracking-tight">
                           {u.name}
                           {u.role.toLowerCase() === 'admin' && <Crown size={14} className="text-amber-500" />}
                         </div>
@@ -101,7 +101,7 @@ const UsersPage: React.FC = () => {
                     </span>
                   </td>
                   <td className="px-10 py-6">
-                    <span className="text-xs font-black text-slate-300 uppercase tracking-widest">{u.subscriptionPlan || 'Nenhum'}</span>
+                    <span className="text-xs font-black text-slate-500 uppercase tracking-widest">{u.subscriptionPlan || 'Nenhum'}</span>
                   </td>
                   <td className="px-10 py-6">
                     <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
@@ -110,9 +110,9 @@ const UsersPage: React.FC = () => {
                   </td>
                   <td className="px-10 py-6 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <button className="p-3 bg-white/5 text-slate-600 hover:text-emerald-500 hover:bg-emerald-500/10 rounded-xl transition-all" title="Liberar Acesso"><UserCheck size={18} /></button>
-                      <button className="p-3 bg-white/5 text-slate-600 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all" title="Interromper"><UserX size={18} /></button>
-                      <button className="p-3 bg-white/5 text-slate-600 hover:text-white rounded-xl transition-all"><MoreVertical size={18} /></button>
+                      <button className="p-3 bg-slate-100 text-slate-400 hover:text-emerald-500 hover:bg-emerald-500/10 rounded-xl transition-all" title="Liberar Acesso"><UserCheck size={18} /></button>
+                      <button className="p-3 bg-slate-100 text-slate-400 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all" title="Interromper"><UserX size={18} /></button>
+                      <button className="p-3 bg-slate-100 text-slate-400 hover:text-slate-900 rounded-xl transition-all"><MoreVertical size={18} /></button>
                     </div>
                   </td>
                 </tr>
