@@ -12,10 +12,10 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onNavigate, currentPage, userRole, onLogout }) => {
   const menuItems = [
-    { id: 'dashboard', label: 'INICIO', icon: <LayoutDashboard size={18} /> },
-    { id: 'library', label: 'Biblioteca Ads', icon: <Library size={18} /> },
-    { id: 'trending', label: 'Escalando Live', icon: <TrendingUp size={18} /> },
-    { id: 'saved', label: 'Meus Favoritos', icon: <Heart size={18} /> }
+    { id: 'dashboard', label: 'INÍCIO', icon: <LayoutDashboard size={18} /> },
+    { id: 'library', label: 'BIBLIOTECA ADS', icon: <Library size={18} /> },
+    { id: 'trending', label: 'ESCALANDO LIVE', icon: <TrendingUp size={18} /> },
+    { id: 'saved', label: 'MEUS FAVORITOS', icon: <Heart size={18} /> }
   ];
 
   const adminItems = [

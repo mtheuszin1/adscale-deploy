@@ -187,7 +187,7 @@ const App: React.FC = () => {
               onClick={() => setCurrentPage('dashboard')}
               className="flex flex-col cursor-pointer"
             >
-              <span className="ml-3 text-lg font-black tracking-tighter text-slate-900 uppercase italic hidden lg:block">ADSCALE</span>
+              <span className="ml-3 text-lg font-black tracking-tighter text-slate-900 uppercase italic hidden lg:block">ADSRADAR</span>
             </div>
           </div>
 
