@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { TrendingUp, Globe, Cpu, Layers, Loader2, ChevronRight, Target, Anchor, LineChart, Zap, ShieldCheck, Fingerprint, ArrowRight } from 'lucide-react';
 import { Ad } from '../types';
+import AdCard from '../components/AdCard';
 
 interface DashboardProps {
   ads: Ad[];
@@ -9,32 +10,7 @@ interface DashboardProps {
   isSubscribed?: boolean;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ ads, onAdClick, onNavigate }) => {
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  // Lógica de Curadoria: Prioriza marcados pelo Admin, depois os com maior volume
-  const featuredAds = useMemo(() => {
-    return [...ads]
-      .filter(ad => ad.isVisible !== false)
-      .sort((a, b) => {
-        if (a.isFeatured && !b.isFeatured) return -1;
-        if (!a.isFeatured && b.isFeatured) return 1;
-        if (a.isFeatured && b.isFeatured) {
-          return (a.displayOrder || 0) - (b.displayOrder || 0);
-        }
-        return b.adCount - a.adCount;
-      })
-      .slice(0, 10);
-  }, [ads]);
-
-  useEffect(() => {
-    if (featuredAds.length <= 1) return;
-    const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % featuredAds.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [featuredAds]);
-
+const Dashboard: React.FC<DashboardProps> = ({ ads, onAdClick, onNavigate, isSubscribed = false }) => {
   const eliteFeatures = [
     {
       title: "RADAR DE ESCALA REAL",
@@ -86,27 +62,48 @@ const Dashboard: React.FC<DashboardProps> = ({ ads, onAdClick, onNavigate }) => 
     }
   ];
 
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  // Curadoria: Ads principais para o Radar Live
+  const featuredAds = useMemo(() => {
+    return [...ads]
+      .filter(ad => ad.isVisible !== false)
+      .sort((a, b) => b.adCount - a.adCount)
+      .slice(0, 10);
+  }, [ads]);
+
+  useEffect(() => {
+    if (featuredAds.length <= 1) return;
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % featuredAds.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [featuredAds]);
+
+  // Mock toggle favorite for the dashboard card
+  const handleToggleFavorite = () => { };
+
   return (
-    <div className="space-y-16 animate-in fade-in duration-700">
+    <div className="space-y-16 animate-in fade-in duration-700 max-w-[1800px] mx-auto">
       {/* Hero Intercept Section */}
-      <section className="relative h-[600px] bg-slate-50 border border-slate-100 rounded-[64px] overflow-hidden flex flex-col md:flex-row shadow-sm">
+      <section className="relative min-h-[600px] bg-slate-50 border border-slate-100 rounded-[64px] overflow-hidden flex flex-col lg:flex-row shadow-sm">
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
 
-        <div className="flex-1 p-12 md:p-20 flex flex-col justify-center relative z-10">
+        <div className="flex-[1.2] p-12 lg:p-24 flex flex-col justify-center relative z-10">
           <div className="inline-flex items-center gap-2 bg-blue-600/10 text-blue-600 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-8 border border-blue-600/20 italic">
             <span className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
             Interceptando agora
           </div>
 
-          <h1 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter text-slate-900 leading-[0.9] mb-8">
-            AdScale <br /> <span className="text-blue-600">Radar.</span>
+          <h1 className="text-6xl md:text-[100px] font-black italic uppercase tracking-tighter text-slate-900 leading-[0.85] mb-8">
+            ADSRADAR <br /> <span className="text-blue-600">RADAR.</span>
           </h1>
 
           <p className="text-slate-400 text-lg md:text-xl font-medium max-w-lg mb-12 italic leading-relaxed">
             A maior rede de interceptação de sinais de escala do Brasil. Dados reais, criativos validados e métricas em tempo real.
           </p>
 
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center gap-6">
             <button
               onClick={() => onNavigate && onNavigate('library')}
               className="bg-slate-900 text-white px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 italic flex items-center gap-3"
@@ -114,22 +111,44 @@ const Dashboard: React.FC<DashboardProps> = ({ ads, onAdClick, onNavigate }) => 
               Acessar Biblioteca <ChevronRight size={18} />
             </button>
             <button
-              onClick={() => onNavigate && onNavigate('scaling')}
-              className="bg-white text-slate-900 border border-slate-200 px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-50 transition-all italic flex items-center gap-3"
+              onClick={() => onNavigate && onNavigate('trending')}
+              className="bg-white text-slate-900 border border-slate-200 px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-50 transition-all italic flex items-center gap-3 shadow-sm"
             >
               Sinais Live <Zap size={18} />
             </button>
           </div>
         </div>
 
-        <div className="flex-1 bg-slate-100 relative group hidden md:block">
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-50 to-transparent z-10" />
-          <div key={activeIndex} className="h-full animate-in fade-in slide-in-from-right-20 duration-1000">
-            <img
-              src={featuredAds[activeIndex]?.thumbnail || `https://ui-avatars.com/api/?name=AD&background=e2e8f0&color=3b82f6&size=1024&bold=true`}
-              className="w-full h-full object-cover grayscale opacity-20"
-              alt=""
-            />
+        {/* Ad Card Slider - O "Card do Lado" que o usuário solicitou */}
+        <div className="flex-1 bg-slate-100/50 p-8 lg:p-20 flex items-center justify-center relative min-h-[500px]">
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-50/50 to-transparent z-0" />
+
+          <div key={activeIndex} className="relative z-10 w-full max-w-[400px] transform hover:scale-[1.02] transition-all duration-700 animate-in fade-in slide-in-from-right-10">
+            {featuredAds.length > 0 ? (
+              <div className="shadow-[0_40px_80px_-15px_rgba(0,0,0,0.1)] rounded-3xl overflow-hidden scale-110">
+                <AdCard
+                  ad={featuredAds[activeIndex]}
+                  onClick={onAdClick}
+                  isSubscribed={isSubscribed}
+                  isFavorite={false}
+                  onToggleFavorite={handleToggleFavorite}
+                />
+              </div>
+            ) : (
+              <div className="w-full aspect-[4/5] bg-slate-200 rounded-3xl animate-pulse flex items-center justify-center text-slate-400 font-bold uppercase italic text-[10px] tracking-widest">
+                Carregando Radar...
+              </div>
+            )}
+
+            {/* Slider Dots */}
+            <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex gap-2">
+              {featuredAds.slice(0, 5).map((_, i) => (
+                <div
+                  key={i}
+                  className={`h-1.5 rounded-full transition-all duration-500 ${i === activeIndex % 5 ? 'w-8 bg-blue-600' : 'w-2 bg-slate-300'}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>
