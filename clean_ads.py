@@ -1,25 +1,31 @@
+import os
+import sys
 
-import sqlite3
+# Add current dir to path to import backend modules
+sys.path.append(os.getcwd())
+
+from backend.database import SyncSessionLocal
+from backend.models import AdModel, AdHistoryModel
 
 def clean_ads(full_wipe=False):
+    db = SyncSessionLocal()
     try:
-        conn = sqlite3.connect('adscale.db')
-        cursor = conn.cursor()
-        
         if full_wipe:
-            print("Performing FULL WIPE of the ads table...")
-            cursor.execute("DELETE FROM ads")
-            cursor.execute("DELETE FROM ad_history")
+            print("Performing FULL WIPE of the ads table via SQLAlchemy...")
+            db.query(AdHistoryModel).delete()
+            db.query(AdModel).delete()
         else:
             # Delete ads that don't have local media (vulnerable to expiration)
-            cursor.execute("DELETE FROM ads WHERE mediaUrl NOT LIKE '/media/%'")
+            print("Cleaning up ads without local media via SQLAlchemy...")
+            db.query(AdModel).filter(~AdModel.mediaUrl.like('/media/%')).delete(synchronize_session=False)
         
-        deleted_count = cursor.rowcount
-        conn.commit()
-        print(f"Cleanup finished. Deleted {deleted_count} records.")
-        conn.close()
+        db.commit()
+        print(f"Cleanup finished successfully.")
     except Exception as e:
         print(f"Error cleaning ads: {e}")
+        db.rollback()
+    finally:
+        db.close()
 
 if __name__ == "__main__":
     import sys
