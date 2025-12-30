@@ -110,35 +110,35 @@ const App: React.FC = () => {
   const renderPage = () => {
     switch (currentPage) {
       case 'dashboard':
-        return (
+        return user ? (
           <Dashboard
             ads={ads}
             onAdClick={setSelectedAd}
             onNavigate={setCurrentPage}
             isSubscribed={hasAccess}
           />
-        );
+        ) : <AuthPage onLogin={handleLogin} />;
       case 'library':
-        return (
+        return user ? (
           <Library
             ads={ads}
             onAdClick={setSelectedAd}
             favorites={user?.favorites || []}
-            onToggleFavorite={user ? toggleFavorite : () => setCurrentPage('auth')}
+            onToggleFavorite={toggleFavorite}
             isSubscribed={hasAccess}
             onNavigate={setCurrentPage}
           />
-        );
+        ) : <AuthPage onLogin={handleLogin} />;
       case 'trending':
-        return (
+        return user ? (
           <ScalingLive
             ads={ads}
             onAdClick={setSelectedAd}
             favorites={user?.favorites || []}
-            onToggleFavorite={user ? toggleFavorite : () => setCurrentPage('auth')}
+            onToggleFavorite={toggleFavorite}
             isSubscribed={hasAccess}
           />
-        );
+        ) : <AuthPage onLogin={handleLogin} />;
       case 'saved':
         return user ? (
           <Favorites
@@ -168,7 +168,9 @@ const App: React.FC = () => {
       case 'auth':
         return <AuthPage onLogin={handleLogin} />;
       default:
-        return <Library ads={ads} onAdClick={setSelectedAd} favorites={user?.favorites || []} onToggleFavorite={() => setCurrentPage('auth')} isSubscribed={hasAccess} onNavigate={setCurrentPage} />;
+        return user ? (
+          <Library ads={ads} onAdClick={setSelectedAd} favorites={user?.favorites || []} onToggleFavorite={toggleFavorite} isSubscribed={hasAccess} onNavigate={setCurrentPage} />
+        ) : <AuthPage onLogin={handleLogin} />;
     }
   };
 
