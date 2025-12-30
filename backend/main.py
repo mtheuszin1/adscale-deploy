@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from typing import List
+from typing import List, Optional
 import uuid
 
 import time
@@ -15,7 +15,7 @@ import os
 load_dotenv()
 
 from .database import engine, Base, get_db
-from .models import AdModel, UserModel
+from .models import AdModel, UserModel, AdHistoryModel
 from .schemas import Ad, AdCreate, User, UserCreate, UserLogin, Token
 from .auth import verify_password, get_password_hash, create_access_token, create_refresh_token, decode_access_token
 from .dependencies import get_current_user, get_current_admin
