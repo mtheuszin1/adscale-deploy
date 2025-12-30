@@ -22,8 +22,8 @@ export const dbService = {
       return ads;
     } catch (error) {
       console.error("Failed to fetch ads from API:", error);
-      // Fallback para constants se API falhar (modo offline/dev sem backend)
-      return INITIAL_ADS;
+      // Removed fallback to INITIAL_ADS to prevent old ads from appearing
+      return [];
     }
   },
 
