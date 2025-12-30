@@ -10,14 +10,12 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-adscale_admin}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-adscale_secure_password_2025}
       POSTGRES_DB: ${POSTGRES_DB:-adscale_prod}
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - adscale_net
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-adscale_admin} -d ${POSTGRES_DB:-adscale_prod}" ]
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-adscale_admin} -d $${POSTGRES_DB:-adscale_prod}" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -27,10 +25,6 @@ services:
     image: redis:7-alpine
     container_name: adscale_redis
     restart: always
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
     networks:
       - adscale_net
     healthcheck:
@@ -47,8 +41,6 @@ services:
     container_name: adscale_backend
     restart: always
     command: uvicorn backend.main:app --host 0.0.0.0 --port 8001
-    volumes:
-      - .:/app
     ports:
       - "8001:8001"
     environment:
@@ -57,7 +49,7 @@ services:
       - SECRET_KEY=${SECRET_KEY:-change_me_in_prod}
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
-      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-https://adsradar.pro,http://localhost}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-https://adsradar.pro,https://api.adsradar.pro}
     depends_on:
       db:
         condition: service_healthy
@@ -70,7 +62,7 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=coolify"
       - "traefik.http.routers.adscale-api.rule=Host(`api.adsradar.pro`)"
-      - "traefik.http.routers.adscale-api.entrypoints=web,websecure"
+      - "traefik.http.routers.adscale-api.entrypoints=websecure"
       - "traefik.http.routers.adscale-api.tls=true"
       - "traefik.http.services.adscale-api.loadbalancer.server.port=8001"
 
@@ -100,10 +92,6 @@ services:
       dockerfile: Dockerfile.frontend
     container_name: adscale_frontend
     restart: always
-    ports:
-      - "9000:80"
-    expose:
-      - "80"
     networks:
       - adscale_net
       - coolify
@@ -111,7 +99,7 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=coolify"
       - "traefik.http.routers.adscale-frontend.rule=Host(`adsradar.pro`) || Host(`77.60.2.62`)"
-      - "traefik.http.routers.adscale-frontend.entrypoints=web,websecure"
+      - "traefik.http.routers.adscale-frontend.entrypoints=websecure"
       - "traefik.http.routers.adscale-frontend.tls=true"
       - "traefik.http.services.adscale-frontend.loadbalancer.server.port=80"
 
