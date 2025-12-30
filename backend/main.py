@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy import text
 from typing import List, Optional
 import uuid
 
@@ -116,6 +117,15 @@ async def startup():
     log_to_file("Backend starting up...")
     try:
         async with engine.begin() as conn:
+            # Manual Migration for existing tables
+            try:
+                await conn.execute(text("ALTER TABLE ads ADD COLUMN IF NOT EXISTS pixels JSON DEFAULT '[]'"))
+                await conn.execute(text("ALTER TABLE ads ADD COLUMN IF NOT EXISTS tld VARCHAR"))
+                await conn.execute(text("CREATE INDEX IF NOT EXISTS ix_ads_tld ON ads (tld)"))
+                log_to_file("Migration: pixels and tld columns verified/added.")
+            except Exception as migrate_e:
+                log_to_file(f"Migration notice (normal if already exists): {str(migrate_e)}")
+                
             await conn.run_sync(Base.metadata.create_all)
         log_to_file("Database initialized.")
     except Exception as e:
