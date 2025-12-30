@@ -86,17 +86,15 @@ export const dbService = {
   // Importação Otimizada (Chunked)
   importAds: async (ads: Ad[]): Promise<void> => {
     try {
-      const CHUNK_SIZE = 1; // 1 por 1 é o mais seguro para evitar payload gigantesco
+      const CHUNK_SIZE = 500; // Aumentado para performance massiva
       const total = ads.length;
 
-      console.log(`[dbService] Iniciando importação de ${total} itens (1 por 1)...`);
+      console.log(`[dbService] Iniciando importação massiva de ${total} itens (Chunks de ${CHUNK_SIZE})...`);
 
       for (let i = 0; i < total; i += CHUNK_SIZE) {
         const chunk = ads.slice(i, i + CHUNK_SIZE);
-        console.log(`[dbService] Enviando item ${i + 1}/${total}: ${chunk[0].title}`);
+        console.log(`[dbService] Enviando bloco ${Math.floor(i / CHUNK_SIZE) + 1} de ${Math.ceil(total / CHUNK_SIZE)}...`);
         await api.importAds(chunk);
-        // Pequeno delay para estabilidade
-        await new Promise(r => setTimeout(r, 300));
       }
 
       console.log("[dbService] Importação concluída com sucesso!");
