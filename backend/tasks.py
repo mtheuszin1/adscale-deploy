@@ -35,13 +35,18 @@ def download_file(url: str, ad_id: str) -> Optional[str]:
             return f"/media/{filename}"
             
         print(f"[Worker] Downloading media: {url}")
-        response = requests.get(url, stream=True, timeout=60)
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        response = requests.get(url, stream=True, timeout=60, headers=headers)
         if response.status_code == 200:
             with open(filepath, 'wb') as f:
                 for chunk in response.iter_content(chunk_size=8192):
                     f.write(chunk)
             print(f"[Worker] Save complete: {filepath}")
             return f"/media/{filename}"
+        else:
+            print(f"[Worker] Download failed with status: {response.status_code}")
         return None
     except Exception as e:
         print(f"[Worker] Error downloading {url}: {e}")

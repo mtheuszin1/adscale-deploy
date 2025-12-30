@@ -86,7 +86,7 @@ export const dbService = {
   // Importação Otimizada (Chunked)
   importAds: async (ads: Ad[]): Promise<void> => {
     try {
-      const CHUNK_SIZE = 500; // Aumentado para performance massiva
+      const CHUNK_SIZE = 50; // Reduzido para garantir estabilidade com downloads
       const total = ads.length;
 
       console.log(`[dbService] Iniciando importação massiva de ${total} itens (Chunks de ${CHUNK_SIZE})...`);
@@ -300,7 +300,7 @@ export const dbService = {
     const description = getVal(['descrição', 'copy', 'text', 'texto', 'body', 'anúncio', 'creative text']) || '';
     const mediaUrl = (row.customImage && row.customImage.length > 10)
       ? row.customImage
-      : (getVal(['url criativo', 'image_url', 'media', 'link imagem', 'creative url', 'thumbnail', 'video_url', 'media_url', 'creative_url', 'link']) || '');
+      : (getVal(['url criativo', 'image_url', 'media', 'link imagem', 'creative url', 'thumbnail', 'video_url', 'media_url', 'creative_url', 'link', 'img_url', 'video url', 'link video', 'creative_media']) || '');
     const infoAds = getVal(['info ads', 'active ads', 'anúncios ativos', 'count', 'quantidade']) || '1';
 
     // --- LÓGICA DE DETECÇÃO DE REGIÃO E ESCALA ---

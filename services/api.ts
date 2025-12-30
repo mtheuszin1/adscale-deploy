@@ -48,7 +48,7 @@ export const api = {
         try {
             // Add a timeout to fail fast if network is dead
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+            const timeoutId = setTimeout(() => controller.abort(), 180000); // 180s
 
             const response = await fetch(`${API_URL}/ads/import`, {
                 method: 'POST',
@@ -59,14 +59,19 @@ export const api = {
 
             clearTimeout(timeoutId);
 
+            if (response.status === 401) {
+                // Token invalid or expired
+                localStorage.removeItem('adscale_token');
+                localStorage.removeItem('adscale_user');
+                window.location.reload();
+                throw new Error('Sessão expirada. Por favor, faça login novamente.');
+            }
+
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                console.error("Import API Error Status:", response.status, response.statusText);
-                console.error("Import API Error Body:", errorData);
-                const errorMessage = Array.isArray(errorData.detail)
-                    ? errorData.detail.map((e: any) => `${e.loc.join('.')} - ${e.msg}`).join('\n')
-                    : (errorData.detail || `Erro ${response.status}: ${response.statusText}`);
-                throw new Error(errorMessage);
+                const error = await response.json().catch(() => ({ detail: 'Erro desconhecido' }));
+                console.error('Import API Error Status:', response.status);
+                console.error('Import API Error Body:', error);
+                throw new Error(error.detail || 'Falha ao importar anúncios');
             }
             return response.json();
         } catch (e: any) {
