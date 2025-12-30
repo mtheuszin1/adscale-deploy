@@ -8,6 +8,7 @@ from sqlalchemy.future import select
 from sqlalchemy import text
 from typing import List, Optional
 import uuid
+from fastapi.staticfiles import StaticFiles
 
 import time
 from dotenv import load_dotenv
@@ -59,6 +60,13 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["*"]
 )
+
+# --- MEDIA VAULT (Permanent Storage) ---
+MEDIA_PATH = os.path.join(os.path.dirname(__file__), "media")
+if not os.path.exists(MEDIA_PATH):
+    os.makedirs(MEDIA_PATH, exist_ok=True)
+
+app.mount("/media", StaticFiles(directory=MEDIA_PATH), name="media")
 
 # --- SCANNER ---
 from .tasks import scan_ad_task, import_ads_task
@@ -335,6 +343,16 @@ async def create_ad(ad: AdCreate, db: AsyncSession = Depends(get_db), current_us
         await db.refresh(existing)
         return existing.to_dict()
     
+    # Persistence Logic for Single Create
+    from .tasks import download_file
+    original_media = ad_data.get('mediaUrl')
+    if original_media:
+        local_path = download_file(original_media, ad_data['id'])
+        if local_path:
+            ad_data['mediaUrl'] = local_path
+            if ad_data.get('thumbnail') == original_media:
+                ad_data['thumbnail'] = local_path
+
     db_ad = AdModel(**ad_data)
     db.add(db_ad)
     await db.commit()

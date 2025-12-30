@@ -3,6 +3,49 @@ from .scanner import AdScanner
 from .database import SyncSessionLocal
 from .models import AdModel
 from sqlalchemy import select
+import os
+import requests
+import hashlib
+from typing import Optional
+
+MEDIA_DIR = "backend/media"
+if not os.path.exists(MEDIA_DIR):
+    os.makedirs(MEDIA_DIR, exist_ok=True)
+
+def download_file(url: str, ad_id: str) -> Optional[str]:
+    """Downloads a file and returns the local path relative to backend root."""
+    try:
+        if not url or not url.startswith("http"):
+            return None
+            
+        # Avoid re-downloading local files
+        if url.startswith("/media/"):
+            return url
+
+        # Generate a stable filename
+        clean_url = url.split("?")[0].split("#")[0]
+        ext = clean_url.split(".")[-1].lower() if "." in clean_url else "mp4"
+        if len(ext) > 4 or not ext.isalnum():
+            ext = "mp4" # fallback
+            
+        filename = f"{ad_id}_{hashlib.md5(url.encode()).hexdigest()[:8]}.{ext}"
+        filepath = os.path.join(MEDIA_DIR, filename)
+        
+        if os.path.exists(filepath):
+            return f"/media/{filename}"
+            
+        print(f"[Worker] Downloading media: {url}")
+        response = requests.get(url, stream=True, timeout=60)
+        if response.status_code == 200:
+            with open(filepath, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
+            print(f"[Worker] Save complete: {filepath}")
+            return f"/media/{filename}"
+        return None
+    except Exception as e:
+        print(f"[Worker] Error downloading {url}: {e}")
+        return None
 
 # Celery Tasks
 
@@ -37,6 +80,16 @@ def import_ads_task(ads_data: list):
         updated_count = 0
         
         for ad_dict in ads_data:
+            # Persistence Logic: Download media if it's an external URL
+            original_media = ad_dict.get('mediaUrl')
+            if original_media:
+                local_path = download_file(original_media, ad_dict['id'])
+                if local_path:
+                    ad_dict['mediaUrl'] = local_path
+                    # Also update thumbnail if it's the same
+                    if ad_dict.get('thumbnail') == original_media:
+                        ad_dict['thumbnail'] = local_path
+
             if ad_dict['id'] in existing_map:
                 # Update existing
                 existing_rec = existing_map[ad_dict['id']]
@@ -46,8 +99,6 @@ def import_ads_task(ads_data: list):
                 updated_count += 1
             else:
                 # Create new
-                # Ensure we filter out keys that might not exist in model if schema allows extras
-                # But AdModel should match.
                 new_ad = AdModel(**ad_dict)
                 new_objects.append(new_ad)
         

@@ -3,7 +3,14 @@ import { Ad, User } from '../types';
 
 
 const isProd = window.location.hostname === 'adsradar.pro';
-const API_URL = import.meta.env.VITE_API_URL || (isProd ? 'https://api.adsradar.pro' : 'http://127.0.0.1:8001');
+export const API_URL = import.meta.env.VITE_API_URL || (isProd ? 'https://api.adsradar.pro' : 'http://127.0.0.1:8001');
+
+export const getMediaUrl = (url: string) => {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    if (url.startsWith('/media')) return `${API_URL}${url}`;
+    return url;
+};
 
 const getHeaders = () => {
     const token = localStorage.getItem('adscale_token');

@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef, memo } from 'react';
 import { Heart, Clock, Tag, CircleDollarSign, MapPin, ChevronDown } from 'lucide-react';
 import { Ad } from '../types';
+import { getMediaUrl } from '../services/api';
 
 
 interface AdCardProps {
@@ -52,8 +53,9 @@ const AdCard: React.FC<AdCardProps> = memo(({ ad, onClick, isFavorite, onToggleF
     );
   }
 
-  const isVideo = ad.mediaUrl.toLowerCase().includes('.mp4') || ad.mediaUrl.toLowerCase().includes('video');
+  const isVideo = ad.type === 'VSL' || ad.mediaUrl.toLowerCase().match(/\.(mp4|webm|ogg|mov)$/) || ad.mediaUrl.toLowerCase().includes('video') || ad.mediaUrl.includes('blob:');
   const thumb = ad.thumbnail || `https://ui-avatars.com/api/?name=${encodeURIComponent(ad.title)}&background=1e293b&color=3b82f6&size=512&bold=true`;
+  const [mediaError, setMediaError] = useState(false);
 
   if (variant === 'hero') {
     return (
@@ -71,20 +73,28 @@ const AdCard: React.FC<AdCardProps> = memo(({ ad, onClick, isFavorite, onToggleF
             <div className="absolute -inset-full top-0 h-full w-1/2 bg-gradient-to-r from-transparent via-white/40 to-transparent -skew-x-12 animate-[shimmer_3s_infinite]" />
           </div>
 
-          {isVideo ? (
+          {isVideo && !mediaError ? (
             <video
               ref={videoRef}
-              src={ad.mediaUrl}
-              poster={thumb}
+              src={getMediaUrl(ad.mediaUrl)}
+              poster={getMediaUrl(thumb)}
               muted
               loop
               playsInline
               autoPlay
               className="w-full h-full object-cover"
               key={ad.mediaUrl}
+              onError={() => setMediaError(true)}
             />
           ) : (
-            <img src={thumb} alt={ad.title} className="w-full h-full object-cover" />
+            <img
+              src={getMediaUrl(thumb)}
+              alt={ad.title}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=AD&background=1e293b&color=3b82f6&size=1024&bold=true`;
+              }}
+            />
           )}
 
           {/* Floating 'ACTIVE ADS' Badge - High Contrast Prize Style */}
@@ -133,7 +143,7 @@ const AdCard: React.FC<AdCardProps> = memo(({ ad, onClick, isFavorite, onToggleF
         <div className="flex items-start gap-4 mb-6">
           <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center overflow-hidden shrink-0 shadow-md border border-slate-100">
             <img
-              src={brandLogo}
+              src={getMediaUrl(brandLogo)}
               className="w-full h-full object-cover"
               alt={ad.title}
               onError={(e) => {
@@ -202,20 +212,21 @@ const AdCard: React.FC<AdCardProps> = memo(({ ad, onClick, isFavorite, onToggleF
 
       {/* ÁREA DE MÍDIA - REFORÇADA PARA VISIBILIDADE */}
       <div className="relative flex-1 overflow-hidden bg-slate-50 min-h-[260px] flex items-center justify-center">
-        {isVideo ? (
+        {isVideo && !mediaError ? (
           <video
             ref={videoRef}
-            src={ad.mediaUrl}
-            poster={thumb}
+            src={getMediaUrl(ad.mediaUrl)}
+            poster={getMediaUrl(thumb)}
             muted
             loop
             playsInline
             className="w-full h-full object-cover"
             key={ad.mediaUrl}
+            onError={() => setMediaError(true)}
           />
         ) : (
           <img
-            src={thumb}
+            src={getMediaUrl(thumb)}
             alt={ad.title}
             className="w-full h-full object-cover"
             key={thumb}
@@ -223,6 +234,13 @@ const AdCard: React.FC<AdCardProps> = memo(({ ad, onClick, isFavorite, onToggleF
               (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=AD&background=1e293b&color=3b82f6&size=512&bold=true`;
             }}
           />
+        )}
+
+        {mediaError && (
+          <div className="absolute top-4 left-4 z-30 bg-rose-600/90 text-white px-3 py-1.5 rounded-xl text-[8px] font-black uppercase tracking-widest border border-white/20 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+            Link de Mídia Expirado
+          </div>
         )}
 
         <div className="absolute bottom-6 right-6 z-20">

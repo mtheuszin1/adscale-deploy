@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronRight, ChevronLeft, CircleDollarSign, Store, ShoppingBag, Facebook, BarChart3, ShieldCheck, Target, Layers, Globe, Lock, Crown, Sparkles, TrendingUp, Download, Eye, Maximize2, Zap, BrainCircuit, History } from 'lucide-react';
 import { Ad, AdHistory } from '../types';
-import { api } from '../services/api';
+import { api, getMediaUrl } from '../services/api';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 
 interface AdModalProps {
@@ -23,7 +23,8 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onClose, onNextAd, onPrevAd, isSu
   const [strategicDecode, setStrategicDecode] = useState<any>(null);
   const [isLoadingDecode, setIsLoadingDecode] = useState(false);
 
-  const isVideo = ad.mediaUrl.toLowerCase().includes('.mp4') || ad.mediaUrl.toLowerCase().includes('video');
+  const isVideo = ad.type === 'VSL' || ad.mediaUrl.toLowerCase().match(/\.(mp4|webm|ogg|mov)$/) || ad.mediaUrl.toLowerCase().includes('video') || ad.mediaUrl.includes('blob:');
+  const [mediaError, setMediaError] = useState(false);
   const creativeMedia = ad.mediaUrl || ad.thumbnail || `https://ui-avatars.com/api/?name=AD&background=1e293b&color=3b82f6&size=1024&bold=true`;
   const brandLogo = ad.brandLogo || `https://ui-avatars.com/api/?name=${encodeURIComponent(ad.title)}&background=3b82f6&color=fff&size=256&bold=true`;
 
@@ -74,7 +75,8 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onClose, onNextAd, onPrevAd, isSu
 
   const handleDownload = async () => {
     try {
-      const response = await fetch(ad.mediaUrl);
+      const fullUrl = getMediaUrl(ad.mediaUrl);
+      const response = await fetch(fullUrl);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -84,7 +86,7 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onClose, onNextAd, onPrevAd, isSu
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (e) {
-      window.open(ad.mediaUrl, '_blank');
+      window.open(getMediaUrl(ad.mediaUrl), '_blank');
     }
   };
 
@@ -107,20 +109,45 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onClose, onNextAd, onPrevAd, isSu
         {/* PAINEL ESQUERDO: MÍDIA / CREATIVE PREVIEW */}
         <div className="md:w-[45%] bg-slate-50 flex flex-col relative group overflow-hidden border-r border-slate-100 min-h-[500px] justify-center">
           <div className="w-full h-full relative flex items-center justify-center">
-            {isVideo ? (
+            {isVideo && !mediaError ? (
               <video
                 key={ad.mediaUrl}
-                src={ad.mediaUrl}
+                src={getMediaUrl(ad.mediaUrl)}
                 className="w-full h-full object-contain"
-                poster={ad.thumbnail}
+                poster={getMediaUrl(ad.thumbnail)}
                 controls autoPlay muted loop playsInline
+                onError={() => setMediaError(true)}
               />
             ) : (
-              <img
-                src={creativeMedia}
-                alt={ad.title}
-                className="w-full h-full object-contain"
-              />
+              <div className="w-full h-full relative flex items-center justify-center bg-slate-100">
+                <img
+                  src={getMediaUrl(creativeMedia)}
+                  alt={ad.title}
+                  className="w-full h-full object-contain"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=AD&background=1e293b&color=3b82f6&size=1024&bold=true`;
+                  }}
+                />
+                {mediaError && (
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 bg-white/90 backdrop-blur-md border border-slate-200 p-8 rounded-[32px] shadow-2xl flex flex-col items-center text-center max-w-[80%]">
+                    <div className="w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mb-4">
+                      <ShoppingBag size={24} />
+                    </div>
+                    <h4 className="text-slate-900 font-black uppercase italic tracking-tighter text-sm mb-2">Mídia Indisponível</h4>
+                    <p className="text-slate-500 text-[10px] font-medium leading-relaxed mb-6">
+                      O link original desta mídia expirou ou é temporário. Você pode tentar re-importar este sinal para atualizar o conteúdo.
+                    </p>
+                    <a
+                      href={ad.libraryUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-6 py-2 bg-blue-600 text-white text-[9px] font-black uppercase rounded-xl hover:bg-blue-500 transition-all shadow-lg"
+                    >
+                      Ver na Biblioteca Original
+                    </a>
+                  </div>
+                )}
+              </div>
             )}
           </div>
 
@@ -203,7 +230,7 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onClose, onNextAd, onPrevAd, isSu
                     <div className="flex items-center gap-4">
                       <div className="relative">
                         <img
-                          src={brandLogo}
+                          src={getMediaUrl(brandLogo)}
                           className="w-14 h-14 rounded-full bg-slate-100 border border-slate-200 object-cover"
                           alt={ad.title}
                         />

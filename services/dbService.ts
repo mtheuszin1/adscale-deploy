@@ -335,7 +335,7 @@ export const dbService = {
       brandLogo: `https://ui-avatars.com/api/?name=${encodeURIComponent(brandName)}&background=020617&color=fff&bold=true`,
       platform: Platform.META,
       niche: analysis.niche,
-      type: mediaUrl.toLowerCase().includes('.mp4') || mediaUrl.toLowerCase().includes('video') ? CreativeType.VSL : CreativeType.DIRECT,
+      type: mediaUrl.toLowerCase().match(/\.(mp4|webm|ogg|mov)$/) || mediaUrl.toLowerCase().includes('video') || mediaUrl.includes('blob:') ? CreativeType.VSL : CreativeType.DIRECT,
       status: adCount > 30 ? AdStatus.SCALING : AdStatus.VALIDATED,
       tags: [analysis.niche, adCount > 50 ? "Escala Pesada" : "Validado", inferredByAI ? "IA Detect" : "Meta Data"],
       thumbnail: mediaUrl,
