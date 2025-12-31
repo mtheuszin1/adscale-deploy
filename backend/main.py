@@ -65,11 +65,11 @@ origins = [origin.strip() for origin in origins_str.split(",") if origin.strip()
 
 # Auto-allow the known production domain and its variants
 variants = [
-    "https://adsradar.pro", 
-    "http://adsradar.pro", 
-    "https://www.adsradar.pro", 
-    "http://www.adsradar.pro",
-    "https://api.adsradar.pro",
+    "https://adnuvem.com", 
+    "http://adnuvem.com", 
+    "https://www.adnuvem.com", 
+    "http://www.adnuvem.com",
+    "https://api.adnuvem.com",
     "http://localhost:5173",
     "http://72.60.2.62",
     "http://72.60.2.62:8000",
@@ -395,10 +395,15 @@ async def create_ad(ad: AdCreate, db: AsyncSession = Depends(get_db), current_us
     await db.commit()
     await db.refresh(db_ad)
     
-    # Record Initial History
-    history = AdHistoryModel(ad_id=db_ad.id, adCount=db_ad.adCount)
-    db.add(history)
-    await db.commit()
+    # Record Initial History (Fail-safe)
+    try:
+        history = AdHistoryModel(ad_id=db_ad.id, adCount=db_ad.adCount)
+        db.add(history)
+        await db.commit()
+    except Exception as e:
+        log_to_file(f"HISTORY SAVE FAILED for {db_ad.id}: {e}")
+        # Suppress error so user gets success
+
     
     return db_ad.to_dict()
 

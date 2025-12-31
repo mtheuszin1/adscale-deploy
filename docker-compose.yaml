@@ -50,7 +50,7 @@ services:
       - SECRET_KEY=${SECRET_KEY:-change_me_in_prod}
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
-      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-https://adsradar.pro,https://api.adsradar.pro}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-https://adnuvem.com,https://api.adnuvem.com}
     depends_on:
       db:
         condition: service_healthy
@@ -62,7 +62,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=coolify"
-      - "traefik.http.routers.adscale-api.rule=Host(`api.adsradar.pro`)"
+      - "traefik.http.routers.adscale-api.rule=Host(`api.adnuvem.com`)"
       - "traefik.http.routers.adscale-api.entrypoints=websecure"
       - "traefik.http.routers.adscale-api.tls=true"
       - "traefik.http.services.adscale-api.loadbalancer.server.port=8001"
@@ -100,7 +100,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=coolify"
-      - "traefik.http.routers.adscale-frontend.rule=Host(`adsradar.pro`) || Host(`77.60.2.62`)"
+      - "traefik.http.routers.adscale-frontend.rule=Host(`adnuvem.com`) || Host(`77.60.2.62`)"
       - "traefik.http.routers.adscale-frontend.entrypoints=websecure"
       - "traefik.http.routers.adscale-frontend.tls=true"
       - "traefik.http.services.adscale-frontend.loadbalancer.server.port=80"

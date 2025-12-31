@@ -2,10 +2,10 @@
 import { Ad, User } from '../types';
 
 
-const isProd = window.location.hostname === 'adsradar.pro';
+const isProd = window.location.hostname === 'adnuvem.com';
 const isIp = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(window.location.hostname);
 export const API_URL = import.meta.env.VITE_API_URL || (
-    isProd ? 'https://api.adsradar.pro' :
+    isProd ? 'https://api.adnuvem.com' :
         (isIp ? `http://${window.location.hostname}:8001` : 'http://127.0.0.1:8001')
 );
 
