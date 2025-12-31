@@ -32,25 +32,55 @@ const PricingPage: React.FC<PricingPageProps> = ({ onSubscribe }) => {
         'Acesso completo à plataforma',
         'Relatórios e insights de desempenho',
         'Suporte prioritário',
-        'Notificações automáticas de campanhas',
+        'Notificações automáticas',
         'Atualizações regulares'
       ],
       recommended: false,
+    },
+    {
+      id: 'quarterly',
+      name: 'Plano Trimestral',
+      price: 'R$ 187,00',
+      period: '/3 meses',
+      description: 'Economia de 7%',
+      features: [
+        'Tudo do plano mensal',
+        'Pagamento único a cada 3 meses',
+        'Prioridade na fila de análise',
+        'Acesso a dados históricos (30 dias)',
+        'Suporte via ticket prioritário'
+      ],
+      recommended: false,
+    },
+    {
+      id: 'semesterly',
+      name: 'Plano Semestral',
+      price: 'R$ 357,00',
+      period: '/6 meses',
+      description: 'Economia de 11%',
+      features: [
+        'Tudo do plano trimestral',
+        'Pagamento único a cada 6 meses',
+        'Acesso antecipado a novas features',
+        'Consultoria de onboarding (Gravada)',
+        'Acesso a dados históricos (90 dias)'
+      ],
+      recommended: true,
     },
     {
       id: 'yearly',
       name: 'Plano Pro Anual',
       price: 'R$ 720,00',
       period: '/ano',
-      description: '10% de desconto real',
+      description: 'Melhor Valor (10% OFF)', // Keeping original math/appeal or adjusting? 67*12=804. 720/804 = ~10% off.
       features: [
-        'Tudo do plano mensal',
+        'Tudo do plano semestral',
         'Economia de R$ 84,00/ano',
         'Consultoria estratégica trimestral',
-        'Acesso antecipado a tendências',
+        'Acesso ilimitado a tendências',
         'Suporte via canal exclusivo'
       ],
-      recommended: true,
+      recommended: false,
     }
   ];
 
@@ -108,7 +138,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onSubscribe }) => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 relative z-10">
           {plans.map((plan, i) => (
             <div
               key={i}
@@ -144,8 +174,8 @@ const PricingPage: React.FC<PricingPageProps> = ({ onSubscribe }) => {
               <button
                 onClick={() => setSelectedPlan({ name: plan.name, price: plan.price, id: plan.id })}
                 className={`w-full py-6 rounded-3xl font-black text-xs uppercase tracking-[0.2em] transition-all active:scale-95 flex items-center justify-center gap-3 italic ${plan.recommended
-                    ? 'bg-blue-600 text-white hover:bg-blue-500 shadow-xl shadow-blue-600/30'
-                    : 'bg-slate-900 text-white hover:bg-slate-800'
+                  ? 'bg-blue-600 text-white hover:bg-blue-500 shadow-xl shadow-blue-600/30'
+                  : 'bg-slate-900 text-white hover:bg-slate-800'
                   }`}
               >
                 ASSINAR AGORA <ArrowRight size={18} />
