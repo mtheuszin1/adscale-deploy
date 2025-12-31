@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, Request, BackgroundTasks
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
@@ -393,38 +393,18 @@ async def create_ad(ad: AdCreate, db: AsyncSession = Depends(get_db), current_us
     return db_ad.to_dict()
 
 @app.post("/ads/import")
-async def import_ads(ads: List[AdCreate], db: AsyncSession = Depends(get_db), current_user = Depends(get_current_admin)):
+async def import_ads(ads: List[AdCreate], background_tasks: BackgroundTasks, current_user = Depends(get_current_admin)):
     ads_data = [ad.dict() for ad in ads]
+    log_to_file(f"Import request received for {len(ads_data)} ads")
     
-    try:
-        # Offload to Celery
-        task = import_ads_task.delay(ads_data)
-        return {
-            "success": True, 
-            "message": "Import started in background",
-            "task_id": task.id,
-            "count": len(ads)
-        }
-    except Exception as e:
-        log_to_file(f"Celery import failed ({e}), falling back to sync mode")
-        # SYNC FALLBACK
-        from .tasks import import_ads_task as sync_import_task
-        from .database import SyncSessionLocal
-        
-        # We run it synchronously
-        try:
-            # import_ads_task expects a list of dicts
-            result = sync_import_task(ads_data)
-            return {
-                "success": True,
-                "message": "Import complete (Synchronous Fallback)",
-                "task_id": "sync_import",
-                "count": len(ads_data),
-                "details": result
-            }
-        except Exception as sync_e:
-            log_to_file(f"Sync fallback also failed: {sync_e}")
-            raise HTTPException(status_code=500, detail=str(sync_e))
+    from .tasks import import_ads_task
+    background_tasks.add_task(import_ads_task, ads_data)
+    
+    return {
+        "success": True, 
+        "message": "Processamento iniciado em segundo plano.",
+        "count": len(ads)
+    }
 
 @app.put("/ads/{ad_id}", response_model=Ad)
 async def update_ad(ad_id: str, ad: AdCreate, db: AsyncSession = Depends(get_db)):
