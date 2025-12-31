@@ -100,9 +100,9 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=coolify"
-      - "traefik.http.routers.adscale-frontend.rule=Host(`adnuvem.com`) || Host(`77.60.2.62`)"
-      - "traefik.http.routers.adscale-frontend.entrypoints=websecure"
-      - "traefik.http.routers.adscale-frontend.tls=true"
+      - "traefik.http.routers.adscale-frontend-fresh.rule=Host(`adnuvem.com`) || Host(`72.60.2.62`)"
+      - "traefik.http.routers.adscale-frontend-fresh.entrypoints=websecure"
+      - "traefik.http.routers.adscale-frontend-fresh.tls=true"
       - "traefik.http.services.adscale-frontend.loadbalancer.server.port=80"
 
 volumes:
