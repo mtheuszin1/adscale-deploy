@@ -70,7 +70,10 @@ variants = [
     "https://www.adsradar.pro", 
     "http://www.adsradar.pro",
     "https://api.adsradar.pro",
-    "http://localhost:5173"
+    "http://localhost:5173",
+    "http://72.60.2.62",
+    "http://72.60.2.62:8000",
+    "http://72.60.2.62:8001"
 ]
 for v in variants:
     if v not in origins:

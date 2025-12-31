@@ -3,7 +3,11 @@ import { Ad, User } from '../types';
 
 
 const isProd = window.location.hostname === 'adsradar.pro';
-export const API_URL = import.meta.env.VITE_API_URL || (isProd ? 'https://api.adsradar.pro' : 'http://127.0.0.1:8001');
+const isIp = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(window.location.hostname);
+export const API_URL = import.meta.env.VITE_API_URL || (
+    isProd ? 'https://api.adsradar.pro' :
+        (isIp ? `http://${window.location.hostname}:8001` : 'http://127.0.0.1:8001')
+);
 
 export const getMediaUrl = (url: string) => {
     if (!url) return '';
