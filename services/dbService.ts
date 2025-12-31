@@ -23,8 +23,8 @@ export const dbService = {
 
       return ads;
     } catch (error) {
-      console.error("Failed to fetch ads from API:", error);
-      // Removed fallback to INITIAL_ADS to prevent old ads from appearing
+      console.error("[dbService] CRITICAL: Failed to fetch ads from API.", error);
+      // alert("Erro ao carregar anúncios: " + error.message); // Opcional: alertar o usuário
       return [];
     }
   },
