@@ -62,27 +62,25 @@ async def startup_event():
 # Allow CORS for local development
 
 # Strict CORS for production
-origins_str = os.getenv("ALLOWED_ORIGINS", "")
-origins = [origin.strip() for origin in origins_str.split(",") if origin.strip()]
+env_origins = os.getenv("ALLOWED_ORIGINS", "")
+origins = [origin.strip() for origin in env_origins.split(",") if origin.strip()]
 
-# Auto-allow the known production domain and its variants
-variants = [
+# Hardcoded required origins for AdNuvem
+required_origins = [
     "https://adnuvem.com", 
-    "http://adnuvem.com", 
     "https://www.adnuvem.com", 
-    "http://www.adnuvem.com",
     "https://api.adnuvem.com",
-    "http://localhost:5173",
-    "http://72.60.2.62",
-    "http://72.60.2.62:8000",
-    "http://72.60.2.62:8001"
+    "http://adnuvem.com",
+    "http://72.60.2.62", # VPS IP check
+    "http://localhost:5173", # Local dev
+    "http://127.0.0.1:5173"
 ]
-for v in variants:
-    if v not in origins:
-        origins.append(v)
 
-print(f"DEBUG: Initializing CORS with allowed origins: {origins}")
-log_to_file(f"CORS ORIGINS: {origins}")
+for origin in required_origins:
+    if origin not in origins:
+        origins.append(origin)
+
+print(f"DEBUG: Active CORS Origins: {origins}")
 
 app.add_middleware(
     CORSMiddleware,
