@@ -1,5 +1,6 @@
 
 from fastapi import FastAPI, Depends, HTTPException, status, Request, BackgroundTasks
+from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
@@ -18,6 +19,7 @@ load_dotenv()
 
 from .database import engine, Base, get_db
 from .models import AdModel, UserModel, AdHistoryModel
+from .tasks import import_ads_task, download_file
 from .schemas import Ad, AdCreate, User, UserCreate, UserLogin, Token
 from .auth import verify_password, get_password_hash, create_access_token, create_refresh_token, decode_access_token
 from .dependencies import get_current_user, get_current_admin
@@ -381,10 +383,10 @@ async def create_ad(ad: AdCreate, db: AsyncSession = Depends(get_db), current_us
         return existing.to_dict()
     
     # Persistence Logic for Single Create
-    from .tasks import download_file
     original_media = ad_data.get('mediaUrl')
     if original_media:
-        local_path = download_file(original_media, ad_data['id'])
+        # Run blocking I/O in threadpool to keep API responsive
+        local_path = await run_in_threadpool(download_file, original_media, ad_data['id'])
         if local_path:
             ad_data['mediaUrl'] = local_path
             if ad_data.get('thumbnail') == original_media:
@@ -413,8 +415,8 @@ async def import_ads(ads: List[AdCreate], current_user = Depends(get_current_adm
     log_to_file(f"Import request received for {len(ads_data)} ads")
     
     # Run synchronously so the frontend waits for completion
-    from .tasks import import_ads_task
-    result = import_ads_task(ads_data)
+    # Run synchronously in a thread so the frontend waits for completion without blocking the server
+    result = await run_in_threadpool(import_ads_task, ads_data)
     
     return {
         "success": True, 
