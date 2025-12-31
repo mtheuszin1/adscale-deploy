@@ -396,17 +396,19 @@ async def create_ad(ad: AdCreate, db: AsyncSession = Depends(get_db), current_us
     return db_ad.to_dict()
 
 @app.post("/ads/import")
-async def import_ads(ads: List[AdCreate], background_tasks: BackgroundTasks, current_user = Depends(get_current_admin)):
+async def import_ads(ads: List[AdCreate], current_user = Depends(get_current_admin)):
     ads_data = [ad.dict() for ad in ads]
     log_to_file(f"Import request received for {len(ads_data)} ads")
     
+    # Run synchronously so the frontend waits for completion
     from .tasks import import_ads_task
-    background_tasks.add_task(import_ads_task, ads_data)
+    result = import_ads_task(ads_data)
     
     return {
         "success": True, 
-        "message": "Processamento iniciado em segundo plano.",
-        "count": len(ads)
+        "message": "Importação concluída.",
+        "count": len(ads),
+        "details": result
     }
 
 @app.put("/ads/{ad_id}", response_model=Ad)
