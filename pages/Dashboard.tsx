@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, memo } from 'react';
 import { TrendingUp, Globe, Cpu, Layers, Loader2, ChevronRight, Target, Anchor, LineChart, Zap, ShieldCheck, Fingerprint, ArrowRight } from 'lucide-react';
 import { Ad } from '../types';
 import AdCard from '../components/AdCard';
@@ -11,6 +11,7 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ ads, onAdClick, onNavigate, isSubscribed = false }) => {
+  if (!ads) return <div className="text-center py-12 text-slate-400">Carregando anúncios...</div>;
   const eliteFeatures = [
     {
       title: "RADAR DE ESCALA REAL",
@@ -69,7 +70,7 @@ const Dashboard: React.FC<DashboardProps> = ({ ads, onAdClick, onNavigate, isSub
     return [...ads]
       .filter(ad => ad.isVisible !== false)
       .sort((a, b) => b.adCount - a.adCount)
-      .slice(0, 10);
+      .slice(0, 5);
   }, [ads]);
 
   useEffect(() => {
@@ -107,12 +108,14 @@ const Dashboard: React.FC<DashboardProps> = ({ ads, onAdClick, onNavigate, isSub
             <button
               onClick={() => onNavigate && onNavigate('library')}
               className="bg-slate-900 text-white px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 italic flex items-center gap-3"
+              aria-label="Acessar Biblioteca"
             >
               Acessar Biblioteca <ChevronRight size={18} />
             </button>
             <button
               onClick={() => onNavigate && onNavigate('trending')}
               className="bg-white text-slate-900 border border-slate-200 px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-50 transition-all italic flex items-center gap-3 shadow-sm"
+              aria-label="Sinais Live"
             >
               Sinais Live <Zap size={18} />
             </button>
@@ -142,11 +145,14 @@ const Dashboard: React.FC<DashboardProps> = ({ ads, onAdClick, onNavigate, isSub
             )}
 
             {/* Slider Dots - Mais discretos */}
-            <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-3">
+            <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-3" role="tablist" aria-label="Indicadores do carrossel">
               {featuredAds.slice(0, 5).map((_, i) => (
                 <div
                   key={i}
                   className={`h-1.5 rounded-full transition-all duration-700 ${i === activeIndex % 5 ? 'w-10 bg-blue-600' : 'w-2 bg-slate-200'}`}
+                  role="tab"
+                  aria-selected={i === activeIndex % 5}
+                  aria-label={`Anúncio ${i + 1}`}
                 />
               ))}
             </div>
@@ -223,12 +229,13 @@ const Dashboard: React.FC<DashboardProps> = ({ ads, onAdClick, onNavigate, isSub
             </div>
           </div>
 
-          <button
-            onClick={() => onNavigate && onNavigate('pricing')}
-            className="bg-white text-slate-900 px-12 py-6 rounded-3xl font-black text-sm uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center gap-4 italic"
-          >
-            Começar Agora <ArrowRight size={24} />
-          </button>
+            <button
+              onClick={() => onNavigate && onNavigate('pricing')}
+              className="bg-white text-slate-900 px-12 py-6 rounded-3xl font-black text-sm uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center gap-4 italic"
+              aria-label="Começar Agora"
+            >
+              Começar Agora <ArrowRight size={24} />
+            </button>
         </div>
       </section>
 
@@ -252,4 +259,4 @@ const Dashboard: React.FC<DashboardProps> = ({ ads, onAdClick, onNavigate, isSub
   );
 };
 
-export default Dashboard;
+export default memo(Dashboard);
